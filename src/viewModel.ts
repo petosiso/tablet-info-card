@@ -8,6 +8,7 @@ import type {
 } from "./types";
 import { asEntityId, asText, formatEntityValue, hasValue, toBool } from "./utils";
 
+// Single translation layer from HA config/entity attributes into a render-friendly model.
 export const buildCardViewModel = (
   config: ResolvedTabletInfoCardConfig,
   hass?: HomeAssistant,

@@ -71,6 +71,7 @@ export class TabletInfoCardRow extends LitElement {
     }
 
     event.stopPropagation();
+    // Keep row behavior local and let the parent decide how to talk to Home Assistant.
     this.dispatchEvent(
       new CustomEvent<TabletInfoRowTapDetail>("tablet-info-row-tap", {
         bubbles: true,

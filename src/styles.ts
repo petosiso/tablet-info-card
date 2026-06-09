@@ -6,6 +6,7 @@ const sanitizeCssValue = (value: unknown, fallback: string): string => {
   return text.length > 0 ? text.replace(/[{};]/g, "") : fallback;
 };
 
+// Dynamic theme values are CSS variables so nested Lit shadow roots inherit them cleanly.
 export const buildThemeStyleMap = (
   config: ResolvedTabletInfoCardConfig,
   viewModel: TabletInfoCardViewModel,

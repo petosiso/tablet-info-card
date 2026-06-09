@@ -3,6 +3,7 @@ import type { HomeAssistant } from "./types";
 import { hasValue } from "./utils";
 import "./tablet-info-card";
 
+// Card picker metadata lives outside the element so loading the bundle registers it once.
 window.customCards = window.customCards || [];
 if (!window.customCards.some((card) => card.type === CARD_TYPE)) {
   window.customCards.push({

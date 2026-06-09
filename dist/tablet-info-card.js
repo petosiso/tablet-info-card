@@ -862,7 +862,7 @@ var xe = Object.defineProperty, Ut = (i, t, e, s) => {
 const Ee = "tablet-info-card-body", nt = class nt extends _ {
   render() {
     if (!this.config)
-      return null;
+      return l;
     const t = yt(this.config, this.hass);
     return E`
       <ha-card style=${le(de(this.config, t))}>
@@ -902,6 +902,7 @@ const Ee = "tablet-info-card-body", nt = class nt extends _ {
     const e = t.detail.row, s = e.tap_action || (e.entity ? { action: "more-info" } : null);
     s && this.fireRowAction(e, s);
   }
+  // Row components own low-level clicks; the body translates their intent to HA actions.
   fireRowAction(t, e) {
     mt(this, {
       config: {

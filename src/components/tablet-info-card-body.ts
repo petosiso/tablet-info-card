@@ -1,4 +1,4 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { property } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { styleMap } from "lit/directives/style-map.js";
@@ -58,7 +58,7 @@ export class TabletInfoCardBody extends LitElement {
 
   render() {
     if (!this.config) {
-      return null;
+      return nothing;
     }
 
     const viewModel = buildCardViewModel(this.config, this.hass);
@@ -132,6 +132,7 @@ export class TabletInfoCardBody extends LitElement {
     this.fireRowAction(row, tapAction);
   }
 
+  // Row components own low-level clicks; the body translates their intent to HA actions.
   private fireRowAction(row: TabletInfoRow, tapAction: NonNullable<TabletInfoRow["tap_action"]> | { action: "more-info" }) {
     fireHassAction(this, {
       config: {

@@ -5,6 +5,7 @@ import { registerElement } from "./register-element";
 import type { HomeAssistant, ResolvedTabletInfoCardConfig, TabletInfoCardConfig } from "./types";
 import "./components/tablet-info-card-body";
 
+// Thin Home Assistant adapter: keep HA lifecycle here and delegate UI to the body component.
 export class TabletInfoCardElement extends LitElement {
   static styles = css`
     :host {
