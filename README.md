@@ -8,13 +8,21 @@ The source is written in Lit, TypeScript, and Vite. Home Assistant loads it as a
 
 ## Screenshots
 
-<img src="https://raw.githubusercontent.com/petosiso/tablet-info-card/main/example_result/0.png" alt="Tablet Info Card close-up in Home Assistant" width="360">
+<p>
+  <img src="https://raw.githubusercontent.com/petosiso/tablet-info-card/main/example_result/0.png" alt="Tablet Info Card close-up in Home Assistant" width="360" style="display: block;">
+</p>
 
-<img src="https://raw.githubusercontent.com/petosiso/tablet-info-card/main/example_result/2.png" alt="Tablet dashboard overview with Tablet Info Card grid" width="900">
+<p>
+  <img src="https://raw.githubusercontent.com/petosiso/tablet-info-card/main/example_result/2.png" alt="Tablet dashboard overview with Tablet Info Card grid" width="900" style="display: block;">
+</p>
 
-<img src="https://raw.githubusercontent.com/petosiso/tablet-info-card/main/example_result/1.png" alt="Tablet dashboard with camera and status cards" width="900">
+<p>
+  <img src="https://raw.githubusercontent.com/petosiso/tablet-info-card/main/example_result/1.png" alt="Tablet dashboard with camera and status cards" width="900" style="display: block;">
+</p>
 
-<img src="https://raw.githubusercontent.com/petosiso/tablet-info-card/main/example_result/3.png" alt="Tablet dashboard with outdoor systems and status cards" width="900">
+<p>
+  <img src="https://raw.githubusercontent.com/petosiso/tablet-info-card/main/example_result/3.png" alt="Tablet dashboard with outdoor systems and status cards" width="900" style="display: block;">
+</p>
 
 ## Why this card exists
 
