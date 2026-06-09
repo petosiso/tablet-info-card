@@ -4,6 +4,8 @@ A compact Home Assistant Lovelace card for status/navigation tiles with one icon
 
 The card is intentionally a **visual component**. The preferred pattern is to keep dashboard logic in Home Assistant template sensors and let the card render a stable attribute contract.
 
+The source is written in React, TypeScript, and Vite. Home Assistant still loads it as a standard Lovelace custom element, and HACS installs the compiled `dist/tablet-info-card.js` bundle.
+
 ## Why this card exists
 
 Home Assistant dashboards often become hard to maintain when every card instance repeats the same input entities, Jinja snippets, warning rules, labels, and navigation paths.
@@ -206,9 +208,43 @@ These options apply only when you define `rows` directly in Lovelace:
 | `inherit_warn` | boolean | `false` | Lets the row inherit the main card warning state. |
 | `tap_action` | object | `more-info` | Home Assistant tap action for the row. |
 
+## Development
+
+The card is implemented as a Home Assistant custom element wrapper around React components:
+
+```text
+src/
+  main.tsx                         # custom element registration and HA lifecycle
+  components/
+    TabletInfoCard.tsx             # card composition
+    CardHeader.tsx                 # icon and title
+    CardRows.tsx                   # row list
+    CardRow.tsx                    # one detail row
+  viewModel.ts                     # config/entity attributes -> render model
+  styles.ts                        # scoped CSS for the shadow DOM
+  types.ts                         # HA and card config types
+```
+
+Install dependencies and build:
+
+```bash
+npm install
+npm run check
+```
+
+`npm run build` writes the HACS-ready bundle to:
+
+```text
+dist/tablet-info-card.js
+```
+
+React is bundled into that file, so Home Assistant users do not install React separately.
+
 ## Release checklist
 
-1. Update `CARD_VERSION` in `dist/tablet-info-card.js`.
-2. Commit the change.
-3. Create a GitHub release, for example `v0.1.0`.
-4. In HACS, redownload the custom repository.
+1. Update `version` in `package.json`.
+2. Update `CARD_VERSION` in `src/constants.ts`.
+3. Run `npm run check`.
+4. Commit the source files and generated `dist/tablet-info-card.js`.
+5. Create a GitHub release, for example `v0.2.0`.
+6. In HACS, redownload the custom repository.
