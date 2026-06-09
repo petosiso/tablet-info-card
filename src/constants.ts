@@ -1,7 +1,7 @@
 import type { TabletInfoCardConfig } from "./types";
 
 export const CARD_TYPE = "tablet-info-card";
-export const CARD_VERSION = "0.2.0";
+export const CARD_VERSION = "0.3.0";
 
 export const DEFAULT_CONFIG: Required<
   Pick<

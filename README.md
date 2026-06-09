@@ -4,7 +4,7 @@ A compact Home Assistant Lovelace card for status/navigation tiles with one icon
 
 The card is intentionally a **visual component**. The preferred pattern is to keep dashboard logic in Home Assistant template sensors and let the card render a stable attribute contract.
 
-The source is written in React, TypeScript, and Vite. Home Assistant still loads it as a standard Lovelace custom element, and HACS installs the compiled `dist/tablet-info-card.js` bundle.
+The source is written in Lit, TypeScript, and Vite. Home Assistant loads it as a standard Lovelace custom element, and HACS installs the compiled `dist/tablet-info-card.js` bundle.
 
 ## Why this card exists
 
@@ -210,18 +210,19 @@ These options apply only when you define `rows` directly in Lovelace:
 
 ## Development
 
-The card is implemented as a Home Assistant custom element wrapper around React components:
+The card is implemented as small Lit Web Components:
 
 ```text
 src/
-  main.tsx                         # custom element registration and HA lifecycle
+  main.ts                          # HACS card picker registration and bundle entry
+  tablet-info-card.ts              # Home Assistant custom card lifecycle
   components/
-    TabletInfoCard.tsx             # card composition
-    CardHeader.tsx                 # icon and title
-    CardRows.tsx                   # row list
-    CardRow.tsx                    # one detail row
+    tablet-info-card-body.ts       # visual card shell and card tap action
+    tablet-info-card-header.ts     # icon and title
+    tablet-info-card-rows.ts       # row list
+    tablet-info-card-row.ts        # one detail row and row tap action
   viewModel.ts                     # config/entity attributes -> render model
-  styles.ts                        # scoped CSS for the shadow DOM
+  styles.ts                        # CSS variable helpers
   types.ts                         # HA and card config types
 ```
 
@@ -238,7 +239,7 @@ npm run check
 dist/tablet-info-card.js
 ```
 
-React is bundled into that file, so Home Assistant users do not install React separately.
+Lit is bundled into that file, so Home Assistant users do not install any frontend dependency separately.
 
 ## Release checklist
 
@@ -246,5 +247,5 @@ React is bundled into that file, so Home Assistant users do not install React se
 2. Update `CARD_VERSION` in `src/constants.ts`.
 3. Run `npm run check`.
 4. Commit the source files and generated `dist/tablet-info-card.js`.
-5. Create a GitHub release, for example `v0.2.0`.
+5. Create a GitHub release, for example `v0.3.0`.
 6. In HACS, redownload the custom repository.
