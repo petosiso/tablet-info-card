@@ -233,6 +233,21 @@ npm install
 npm run check
 ```
 
+Run a local Vite dev server for testing from Home Assistant:
+
+```bash
+npm run dev -- --port 5173
+```
+
+Then add a temporary Home Assistant dashboard resource:
+
+```yaml
+url: http://YOUR_DEV_MACHINE_IP:5173/src/main.ts
+type: module
+```
+
+Disable the HACS resource for the same card while using the dev server, because the browser can register `custom:tablet-info-card` only once.
+
 `npm run build` writes the HACS-ready bundle to:
 
 ```text
