@@ -6,6 +6,16 @@ The card is intentionally a **visual component**. The preferred pattern is to ke
 
 The source is written in Lit, TypeScript, and Vite. Home Assistant loads it as a standard Lovelace custom element, and HACS installs the compiled `dist/tablet-info-card.js` bundle.
 
+## Screenshots
+
+<img src="./example_result/0.png" alt="Tablet Info Card close-up in Home Assistant" width="360">
+
+<img src="./example_result/2.png" alt="Tablet dashboard overview with Tablet Info Card grid" width="900">
+
+<img src="./example_result/1.png" alt="Tablet dashboard with camera and status cards" width="900">
+
+<img src="./example_result/3.png" alt="Tablet dashboard with outdoor systems and status cards" width="900">
+
 ## Why this card exists
 
 Home Assistant dashboards often become hard to maintain when every card instance repeats the same input entities, Jinja snippets, warning rules, labels, and navigation paths.
