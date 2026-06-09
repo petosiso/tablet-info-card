@@ -1,14 +1,14 @@
-const T = "tablet-info-card", Rt = "0.3.0", Nt = {
-  background_ok: "#202226",
-  background_nok: "#202226",
+const T = "tablet-info-card", Rt = "0.3.1", Nt = {
+  background_ok: "rgba(46, 46, 46, 0.5)",
+  background_nok: "#ffcccc",
   text_ok: "#18bcf2",
-  text_nok: "#18bcf2",
-  text_highlight: "#ff7b22",
-  icon_size: "30px",
-  icon_col_width: "32px",
+  text_nok: "#3a3a3a",
+  text_highlight: "#ff5d0c",
+  icon_size: "37px",
+  icon_col_width: "37px",
   row_indent: "10px",
-  height: "118px",
-  border_radius: "16px"
+  height: "130px",
+  border_radius: "20px"
 }, u = (i) => i != null && i !== "", R = (i) => i === !0 || i === "true" || i === "True" || i === "on" || i === "yes" || i === 1 || i === "1", $ = (i) => u(i) ? String(i).replace(/\s+/g, " ").trim() : "", Ht = (i) => {
   const t = $(i);
   return t.length > 0 ? t : null;
@@ -628,13 +628,13 @@ const kt = "important", he = " !" + kt, le = St(class extends Ct {
   const e = String(i ?? t).trim();
   return e.length > 0 ? e.replace(/[{};]/g, "") : t;
 }, de = (i, t) => ({
-  "--tic-background": m(t.background, "#202226"),
+  "--tic-background": m(t.background, "rgba(46, 46, 46, 0.5)"),
   "--tic-main-color": m(t.mainColor, "#18bcf2"),
-  "--tic-highlight-color": m(i.text_highlight, "#ff7b22"),
-  "--tic-height": m(i.height, "118px"),
-  "--tic-border-radius": m(i.border_radius, "16px"),
-  "--tic-icon-size": m(i.icon_size, "30px"),
-  "--tic-icon-col-width": m(i.icon_col_width, "32px"),
+  "--tic-highlight-color": m(i.text_highlight, "#ff5d0c"),
+  "--tic-height": m(i.height, "130px"),
+  "--tic-border-radius": m(i.border_radius, "20px"),
+  "--tic-icon-size": m(i.icon_size, "37px"),
+  "--tic-icon-col-width": m(i.icon_col_width, "37px"),
   "--tic-row-indent": m(i.row_indent, "10px")
 }), yt = (i, t) => {
   const e = Tt(t, i.entity), s = e?.attributes ?? {}, r = u(i.warn) ? R(i.warn) : R(s.is_warn), n = $(i.navigation_path || s.navigation_path) || void 0, o = ue(i, t, s, r);
@@ -695,24 +695,24 @@ it.styles = B`
 
     .header {
       display: grid;
-      grid-template-columns: var(--tic-icon-col-width, 32px) 1fr;
+      grid-template-columns: var(--tic-icon-col-width, 37px) 1fr;
       column-gap: 8px;
       align-items: center;
       min-width: 0;
     }
 
     .icon-cell {
-      width: var(--tic-icon-col-width, 32px);
-      height: var(--tic-icon-size, 30px);
+      width: var(--tic-icon-col-width, 37px);
+      height: var(--tic-icon-size, 37px);
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     ha-icon {
-      --mdc-icon-size: var(--tic-icon-size, 30px);
-      --iron-icon-width: var(--tic-icon-size, 30px);
-      --iron-icon-height: var(--tic-icon-size, 30px);
+      --mdc-icon-size: var(--tic-icon-size, 37px);
+      --iron-icon-width: var(--tic-icon-size, 37px);
+      --iron-icon-height: var(--tic-icon-size, 37px);
       color: var(--tic-main-color, #18bcf2);
       filter: drop-shadow(0 0 5px color-mix(in srgb, var(--tic-main-color, #18bcf2) 42%, transparent));
     }
@@ -797,7 +797,7 @@ st.styles = B`
     }
 
     .row.warn {
-      color: var(--tic-highlight-color, #ff7b22);
+      color: var(--tic-highlight-color, #ff5d0c);
       font-weight: 700;
     }
   `;
@@ -921,9 +921,9 @@ nt.styles = B`
 
     ha-card {
       display: block;
-      min-height: var(--tic-height, 118px);
-      border-radius: var(--tic-border-radius, 16px);
-      background: var(--tic-background, #202226);
+      min-height: var(--tic-height, 130px);
+      border-radius: var(--tic-border-radius, 20px);
+      background: var(--tic-background, rgba(46, 46, 46, 0.5));
       border: 1px solid color-mix(in srgb, var(--tic-main-color, #18bcf2) 75%, transparent);
       box-shadow:
         0 0 0 1px color-mix(in srgb, var(--tic-main-color, #18bcf2) 18%, transparent) inset,
@@ -934,7 +934,7 @@ nt.styles = B`
     }
 
     .card {
-      min-height: var(--tic-height, 118px);
+      min-height: var(--tic-height, 130px);
       box-sizing: border-box;
       display: grid;
       grid-template-rows: min-content 1fr;

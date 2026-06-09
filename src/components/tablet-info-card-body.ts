@@ -22,9 +22,9 @@ export class TabletInfoCardBody extends LitElement {
 
     ha-card {
       display: block;
-      min-height: var(--tic-height, 118px);
-      border-radius: var(--tic-border-radius, 16px);
-      background: var(--tic-background, #202226);
+      min-height: var(--tic-height, 130px);
+      border-radius: var(--tic-border-radius, 20px);
+      background: var(--tic-background, rgba(46, 46, 46, 0.5));
       border: 1px solid color-mix(in srgb, var(--tic-main-color, #18bcf2) 75%, transparent);
       box-shadow:
         0 0 0 1px color-mix(in srgb, var(--tic-main-color, #18bcf2) 18%, transparent) inset,
@@ -35,7 +35,7 @@ export class TabletInfoCardBody extends LitElement {
     }
 
     .card {
-      min-height: var(--tic-height, 118px);
+      min-height: var(--tic-height, 130px);
       box-sizing: border-box;
       display: grid;
       grid-template-rows: min-content 1fr;

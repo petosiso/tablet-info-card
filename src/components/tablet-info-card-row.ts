@@ -32,7 +32,7 @@ export class TabletInfoCardRow extends LitElement {
     }
 
     .row.warn {
-      color: var(--tic-highlight-color, #ff7b22);
+      color: var(--tic-highlight-color, #ff5d0c);
       font-weight: 700;
     }
   `;

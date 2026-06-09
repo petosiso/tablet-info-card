@@ -1,6 +1,6 @@
 {
   "name": "tablet-info-card",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Reusable Home Assistant Lovelace status card.",
   "type": "module",
   "private": false,

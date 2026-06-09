@@ -13,24 +13,24 @@ export class TabletInfoCardHeader extends LitElement {
 
     .header {
       display: grid;
-      grid-template-columns: var(--tic-icon-col-width, 32px) 1fr;
+      grid-template-columns: var(--tic-icon-col-width, 37px) 1fr;
       column-gap: 8px;
       align-items: center;
       min-width: 0;
     }
 
     .icon-cell {
-      width: var(--tic-icon-col-width, 32px);
-      height: var(--tic-icon-size, 30px);
+      width: var(--tic-icon-col-width, 37px);
+      height: var(--tic-icon-size, 37px);
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     ha-icon {
-      --mdc-icon-size: var(--tic-icon-size, 30px);
-      --iron-icon-width: var(--tic-icon-size, 30px);
-      --iron-icon-height: var(--tic-icon-size, 30px);
+      --mdc-icon-size: var(--tic-icon-size, 37px);
+      --iron-icon-width: var(--tic-icon-size, 37px);
+      --iron-icon-height: var(--tic-icon-size, 37px);
       color: var(--tic-main-color, #18bcf2);
       filter: drop-shadow(0 0 5px color-mix(in srgb, var(--tic-main-color, #18bcf2) 42%, transparent));
     }
