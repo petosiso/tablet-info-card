@@ -20,6 +20,15 @@ export interface HomeAssistant {
   states: Record<string, HassEntity>;
 }
 
+// Simple state matcher for fallback YAML; complex logic belongs in HA template sensors.
+export interface WarnConditionConfig {
+  entity: string;
+  state?: string | string[];
+  not_state?: string | string[];
+}
+
+export type WarnConfig = boolean | string | number | WarnConditionConfig;
+
 export interface TabletInfoRowConfig {
   entity?: string;
   text?: unknown;
@@ -27,7 +36,7 @@ export interface TabletInfoRowConfig {
   attribute?: string;
   unit?: string;
   show_name?: boolean;
-  warn?: unknown;
+  warn?: WarnConfig;
   inherit_warn?: unknown;
   tap_action?: HassActionConfig;
 }
@@ -38,7 +47,7 @@ export interface TabletInfoCardConfig {
   name?: string;
   icon?: string;
   navigation_path?: string;
-  warn?: unknown;
+  warn?: WarnConfig;
   rows?: TabletInfoRowConfig[];
   tap_action?: HassActionConfig;
   background_ok?: string;
@@ -51,6 +60,8 @@ export interface TabletInfoCardConfig {
   row_indent?: string;
   height?: string;
   border_radius?: string;
+  title_font_size?: string;
+  row_font_size?: string;
   [key: string]: unknown;
 }
 
@@ -68,6 +79,8 @@ export type ResolvedTabletInfoCardConfig = TabletInfoCardConfig &
       | "row_indent"
       | "height"
       | "border_radius"
+      | "title_font_size"
+      | "row_font_size"
     >
   >;
 

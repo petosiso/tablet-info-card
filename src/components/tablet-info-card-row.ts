@@ -22,7 +22,7 @@ export class TabletInfoCardRow extends LitElement {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      font-size: 11px;
+      font-size: var(--tic-row-font-size, 12px);
       line-height: 1.15;
       color: var(--tic-main-color, #18bcf2);
     }

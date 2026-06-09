@@ -1,15 +1,23 @@
 # Fallback style for users who prefer defining the rows directly in Lovelace.
 type: custom:tablet-info-card
-entity: sensor.boiler_status
-name: Boiler
-icon: mdi:water-boiler
-navigation_path: /dashboard-boiler
-warn: false
+entity: sun.sun
+name: Sun overview
+icon: mdi:white-balance-sunny
+navigation_path: /lovelace/default_view
+warn:
+  entity: sun.sun
+  state: below_horizon
+title_font_size: 16px
+row_font_size: 12px
 rows:
-  - entity: sensor.boiler_temperature
-    name: Temperature
-  - text: Heating enabled
-    entity: switch.boiler_heating
-  - text: Service needed
-    entity: binary_sensor.boiler_service
-    warn: true
+  - entity: sun.sun
+    name: State
+    warn:
+      entity: sun.sun
+      state: below_horizon
+  - entity: sun.sun
+    attribute: next_rising
+    name: Next rising
+  - entity: sun.sun
+    attribute: next_setting
+    name: Next setting

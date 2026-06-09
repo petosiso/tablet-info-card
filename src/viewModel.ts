@@ -15,7 +15,7 @@ export const buildCardViewModel = (
 ): TabletInfoCardViewModel => {
   const entity = getEntity(hass, config.entity);
   const attributes = entity?.attributes ?? {};
-  const isWarn = hasValue(config.warn) ? toBool(config.warn) : toBool(attributes.is_warn);
+  const isWarn = hasValue(config.warn) ? resolveWarn(config.warn, hass) : toBool(attributes.is_warn);
   const navigationPath = asText(config.navigation_path || attributes.navigation_path) || undefined;
   const rows = getRows(config, hass, attributes, isWarn);
 
@@ -75,9 +75,37 @@ const normalizeConfiguredRow = (
   return {
     entity: row.entity ?? null,
     text,
-    warn: hasValue(row.warn) ? toBool(row.warn) : cardWarn && toBool(row.inherit_warn),
+    warn: hasValue(row.warn) ? resolveWarn(row.warn, hass) : cardWarn && toBool(row.inherit_warn),
     tap_action: row.tap_action,
   };
+};
+
+const resolveWarn = (warn: TabletInfoRowConfig["warn"], hass: HomeAssistant | undefined): boolean => {
+  if (typeof warn !== "object" || warn === null || Array.isArray(warn)) {
+    return toBool(warn);
+  }
+
+  const entity = getEntity(hass, warn.entity);
+  if (!entity) {
+    return false;
+  }
+
+  const expectedState = warn.state;
+  if (expectedState !== undefined && expectedState !== null && expectedState !== "") {
+    return matchesState(entity.state, expectedState);
+  }
+
+  const excludedState = warn.not_state;
+  if (excludedState !== undefined && excludedState !== null && excludedState !== "") {
+    return !matchesState(entity.state, excludedState);
+  }
+
+  return toBool(entity.state);
+};
+
+const matchesState = (actualState: string, expectedState: string | string[]): boolean => {
+  const expectedStates = Array.isArray(expectedState) ? expectedState : [expectedState];
+  return expectedStates.map(asText).includes(asText(actualState));
 };
 
 const formatConfiguredEntityRow = (entity: HassEntity | undefined, row: TabletInfoRowConfig): string => {

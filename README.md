@@ -153,22 +153,66 @@ You can also configure everything directly in Lovelace without template sensors:
 
 ```yaml
 type: custom:tablet-info-card
-entity: sensor.boiler_status
-name: Boiler
-icon: mdi:water-boiler
-navigation_path: /dashboard-boiler
-warn: false
+entity: sun.sun
+name: Sun overview
+icon: mdi:white-balance-sunny
+navigation_path: /lovelace/default_view
+warn:
+  entity: sun.sun
+  state: below_horizon
+title_font_size: 16px
+row_font_size: 12px
 rows:
-  - entity: sensor.boiler_temperature
-    name: Temperature
-  - text: Heating enabled
-    entity: switch.boiler_heating
-  - text: Service needed
-    entity: binary_sensor.boiler_service
-    warn: true
+  - entity: sun.sun
+    name: State
+    warn:
+      entity: sun.sun
+      state: below_horizon
+  - entity: sun.sun
+    attribute: next_rising
+    name: Next rising
+  - entity: sun.sun
+    attribute: next_setting
+    name: Next setting
 ```
 
 Rows support static text or entity-derived text. If a row has `entity` but no `text`, the card renders the entity friendly name and state.
+
+For simple fallback use cases, `warn` can also be driven by an entity state:
+
+```yaml
+warn:
+  entity: binary_sensor.garage_door
+  state: "on"
+```
+
+Multiple states are supported:
+
+```yaml
+warn:
+  entity: cover.bedroom_blinds
+  state:
+    - open
+    - opening
+```
+
+Use `not_state` when the warning should be active for every state except the listed one:
+
+```yaml
+warn:
+  entity: sensor.tablet_battery_health
+  not_state: normal
+```
+
+The warning object supports these fields:
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `entity` | string | Yes | Entity whose state is checked. |
+| `state` | string or list | No | Warning is active when the entity state matches. |
+| `not_state` | string or list | No | Warning is active when the entity state does not match. |
+
+The card intentionally does not evaluate Jinja in Lovelace YAML. For complex conditions, calculations, formatting, or comparisons, create a Home Assistant template sensor and expose the final text/warning attributes to the card.
 
 ## Card options
 
@@ -179,7 +223,7 @@ Rows support static text or entity-derived text. If a row has `entity` but no `t
 | `icon` | string | entity attribute or `mdi:flash` | Main Material Design icon override. |
 | `navigation_path` | string | entity attribute | Path used for the default card tap action. |
 | `tap_action` | object | navigate or more-info | Home Assistant tap action for the main card. |
-| `warn` | boolean | `entity.attributes.is_warn` | Switches the card to warning colors. |
+| `warn` | boolean or object | `entity.attributes.is_warn` | Switches the card to warning colors, either statically or by matching another entity state. |
 | `rows` | list | entity row attributes | Up to three detail rows. |
 | `background_ok` | string | `rgba(46, 46, 46, 0.5)` | Normal card background. |
 | `background_nok` | string | `#ffcccc` | Warning card background. |
@@ -191,6 +235,8 @@ Rows support static text or entity-derived text. If a row has `entity` but no `t
 | `icon_size` | string | `37px` | Icon size. |
 | `icon_col_width` | string | `37px` | Icon column width. |
 | `row_indent` | string | `10px` | Left padding for detail rows. |
+| `title_font_size` | string | `16px` | CSS font size for the card title. |
+| `row_font_size` | string | `12px` | CSS font size for detail rows. |
 
 ## Fallback row options
 
@@ -204,7 +250,7 @@ These options apply only when you define `rows` directly in Lovelace:
 | `attribute` | string | optional | Entity attribute to display instead of state. |
 | `unit` | string | entity unit | Unit appended to derived state text. |
 | `show_name` | boolean | `true` | Set to `false` to show only the derived value. |
-| `warn` | boolean | `false` | Highlights the row. |
+| `warn` | boolean or object | `false` | Highlights the row, either statically or by matching another entity state. |
 | `inherit_warn` | boolean | `false` | Lets the row inherit the main card warning state. |
 | `tap_action` | object | `more-info` | Home Assistant tap action for the row. |
 

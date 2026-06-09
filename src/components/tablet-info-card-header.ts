@@ -40,7 +40,7 @@ export class TabletInfoCardHeader extends LitElement {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      font-size: 14px;
+      font-size: var(--tic-title-font-size, 16px);
       font-weight: 700;
       line-height: 1.15;
       letter-spacing: 0;

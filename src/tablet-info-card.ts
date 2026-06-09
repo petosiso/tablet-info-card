@@ -53,6 +53,8 @@ export class TabletInfoCardElement extends LitElement {
         { name: "icon", selector: { icon: {} } },
         { name: "navigation_path", selector: { text: {} } },
         { name: "warn", selector: { boolean: {} } },
+        { name: "title_font_size", selector: { text: {} } },
+        { name: "row_font_size", selector: { text: {} } },
       ],
     };
   }

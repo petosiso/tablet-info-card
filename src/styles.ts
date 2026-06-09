@@ -19,4 +19,6 @@ export const buildThemeStyleMap = (
   "--tic-icon-size": sanitizeCssValue(config.icon_size, "37px"),
   "--tic-icon-col-width": sanitizeCssValue(config.icon_col_width, "37px"),
   "--tic-row-indent": sanitizeCssValue(config.row_indent, "10px"),
+  "--tic-title-font-size": sanitizeCssValue(config.title_font_size, "16px"),
+  "--tic-row-font-size": sanitizeCssValue(config.row_font_size, "12px"),
 });
