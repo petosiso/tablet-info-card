@@ -1,0 +1,13 @@
+icon: mdi:flash
+name: Tablet
+navigation_path: /dashboard-tablet
+is_warn: false
+row_1_text: Battery 82 %
+row_1_entity: sensor.tablet_battery
+row_1_warn: false
+row_2_text: Charging
+row_2_entity: binary_sensor.tablet_charging
+row_2_warn: false
+row_3_text: Wi-Fi OK
+row_3_entity: sensor.tablet_wifi
+row_3_warn: false

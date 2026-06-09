@@ -1,0 +1,14 @@
+type: custom:tablet-info-card
+entity: sensor.boiler_status
+name: Boiler
+icon: mdi:water-boiler
+navigation_path: /dashboard-boiler
+warn: false
+rows:
+  - entity: sensor.boiler_temperature
+    name: Temperature
+  - text: Heating enabled
+    entity: switch.boiler_heating
+  - text: Service needed
+    entity: binary_sensor.boiler_service
+    warn: true
