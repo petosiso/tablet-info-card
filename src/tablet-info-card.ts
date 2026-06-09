@@ -4,6 +4,7 @@ import { CARD_TYPE, DEFAULT_CONFIG } from "./constants";
 import { registerElement } from "./register-element";
 import type { HomeAssistant, ResolvedTabletInfoCardConfig, TabletInfoCardConfig } from "./types";
 import "./components/tablet-info-card-body";
+import "./components/tablet-info-card-editor";
 
 // Thin Home Assistant adapter: keep HA lifecycle here and delegate UI to the body component.
 export class TabletInfoCardElement extends LitElement {
@@ -41,22 +42,13 @@ export class TabletInfoCardElement extends LitElement {
 
   static getStubConfig() {
     return {
+      source: "template_entity",
       entity: "sensor.ui_element_example",
     };
   }
 
-  static getConfigForm() {
-    return {
-      schema: [
-        { name: "entity", selector: { entity: {} } },
-        { name: "name", selector: { text: {} } },
-        { name: "icon", selector: { icon: {} } },
-        { name: "navigation_path", selector: { text: {} } },
-        { name: "warn", selector: { boolean: {} } },
-        { name: "title_font_size", selector: { text: {} } },
-        { name: "row_font_size", selector: { text: {} } },
-      ],
-    };
+  static getConfigElement() {
+    return document.createElement("tablet-info-card-editor");
   }
 
   render() {

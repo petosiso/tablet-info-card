@@ -5,6 +5,7 @@ import type {
   TabletInfoCardViewModel,
   TabletInfoRow,
   TabletInfoRowConfig,
+  TabletInfoCardSource,
 } from "./types";
 import { asEntityId, asText, formatEntityValue, hasValue, toBool } from "./utils";
 
@@ -15,14 +16,15 @@ export const buildCardViewModel = (
 ): TabletInfoCardViewModel => {
   const entity = getEntity(hass, config.entity);
   const attributes = entity?.attributes ?? {};
-  const isWarn = hasValue(config.warn) ? resolveWarn(config.warn, hass) : toBool(attributes.is_warn);
-  const navigationPath = asText(config.navigation_path || attributes.navigation_path) || undefined;
-  const rows = getRows(config, hass, attributes, isWarn);
+  const source = config.source;
+  const isWarn = getCardWarn(config, hass, attributes, source);
+  const navigationPath = getNavigationPath(config, attributes, source);
+  const rows = getRows(config, hass, attributes, isWarn, source);
 
   return {
     entity,
-    title: getTitle(config, entity, attributes),
-    icon: asText(config.icon || attributes.icon) || "mdi:flash",
+    title: getTitle(config, entity, attributes, source),
+    icon: asText(config.icon || (source === "template_entity" ? attributes.icon : "")) || "mdi:flash",
     navigationPath,
     isWarn,
     mainColor: isWarn ? config.text_nok : config.text_ok,
@@ -39,30 +41,61 @@ const getTitle = (
   config: ResolvedTabletInfoCardConfig,
   entity: HassEntity | undefined,
   attributes: Record<string, unknown>,
+  source: TabletInfoCardSource,
 ): string =>
-  asText(config.name || attributes.name || attributes.friendly_name || entity?.attributes?.friendly_name || config.entity || "");
+  asText(
+    config.name ||
+      (source === "template_entity" ? attributes.name || attributes.friendly_name : "") ||
+      entity?.attributes?.friendly_name ||
+      config.entity ||
+      "",
+  );
+
+const getCardWarn = (
+  config: ResolvedTabletInfoCardConfig,
+  hass: HomeAssistant | undefined,
+  attributes: Record<string, unknown>,
+  source: TabletInfoCardSource,
+): boolean => {
+  if (hasValue(config.warn)) {
+    return resolveWarn(config.warn, hass);
+  }
+
+  return source === "template_entity" ? toBool(attributes.is_warn) : false;
+};
+
+const getNavigationPath = (
+  config: ResolvedTabletInfoCardConfig,
+  attributes: Record<string, unknown>,
+  source: TabletInfoCardSource,
+): string | undefined =>
+  asText(config.navigation_path || (source === "template_entity" ? attributes.navigation_path : "")) || undefined;
 
 const getRows = (
   config: ResolvedTabletInfoCardConfig,
   hass: HomeAssistant | undefined,
   attributes: Record<string, unknown>,
   cardWarn: boolean,
+  source: TabletInfoCardSource,
 ): TabletInfoRow[] => {
-  if (Array.isArray(config.rows) && config.rows.length > 0) {
-    return config.rows
+  if (source === "manual") {
+    return (config.rows ?? [])
       .slice(0, 3)
       .map((row) => normalizeConfiguredRow(row, hass, cardWarn))
       .filter((row) => hasValue(row.text));
   }
 
-  return [1, 2, 3]
+  return getTemplateRows(attributes);
+};
+
+const getTemplateRows = (attributes: Record<string, unknown>): TabletInfoRow[] =>
+  [1, 2, 3]
     .map((rowNumber) => ({
       entity: asEntityId(attributes[`row_${rowNumber}_entity`]),
       text: asText(attributes[`row_${rowNumber}_text`]),
       warn: toBool(attributes[`row_${rowNumber}_warn`]),
     }))
     .filter((row) => hasValue(row.text));
-};
 
 const normalizeConfiguredRow = (
   row: TabletInfoRowConfig,

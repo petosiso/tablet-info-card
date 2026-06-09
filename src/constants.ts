@@ -1,7 +1,9 @@
 import type { TabletInfoCardConfig } from "./types";
 
 export const CARD_TYPE = "tablet-info-card";
-export const CARD_VERSION = "0.3.2";
+export const CARD_VERSION = "0.4.0";
+export const TEMPLATE_ENTITY_TYPE_ATTRIBUTE = "ui_element_type";
+export const TEMPLATE_ENTITY_TYPE_VALUE = "tablet_info_card";
 
 export const DEFAULT_CONFIG: Required<
   Pick<
@@ -18,8 +20,10 @@ export const DEFAULT_CONFIG: Required<
     | "border_radius"
     | "title_font_size"
     | "row_font_size"
+    | "source"
   >
 > = {
+  source: "template_entity",
   background_ok: "rgba(46, 46, 46, 0.5)",
   background_nok: "#ffcccc",
   text_ok: "#18bcf2",

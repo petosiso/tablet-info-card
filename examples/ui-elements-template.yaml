@@ -7,6 +7,7 @@
 # The card is meant to render these template sensors by passing only:
 #
 # type: custom:tablet-info-card
+# source: template_entity
 # entity: sensor.ui_element_blinds
 
 - sensor:
@@ -23,6 +24,7 @@
         %}
         {{ 'Open' if open_count > 0 else 'Closed' }}
       attributes:
+        ui_element_type: tablet_info_card
         name: "Blinds"
         icon: "mdi:blinds-horizontal"
         navigation_path: "/lovelace/blinds"
@@ -89,6 +91,7 @@
         {% set active = sensors | select('is_state', 'on') | list | count %}
         {{ 'Motion detected' if active > 0 else 'Clear' }}
       attributes:
+        ui_element_type: tablet_info_card
         name: "Motion"
         icon: "mdi:motion-sensor"
         navigation_path: "/lovelace/motion"

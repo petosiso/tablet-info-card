@@ -28,6 +28,8 @@ export interface WarnConditionConfig {
 }
 
 export type WarnConfig = boolean | string | number | WarnConditionConfig;
+export type CssSizeConfig = string | number;
+export type TabletInfoCardSource = "template_entity" | "manual";
 
 export interface TabletInfoRowConfig {
   entity?: string;
@@ -43,6 +45,7 @@ export interface TabletInfoRowConfig {
 
 export interface TabletInfoCardConfig {
   type?: string;
+  source?: TabletInfoCardSource;
   entity?: string;
   name?: string;
   icon?: string;
@@ -58,10 +61,10 @@ export interface TabletInfoCardConfig {
   icon_size?: string;
   icon_col_width?: string;
   row_indent?: string;
-  height?: string;
+  height?: CssSizeConfig;
   border_radius?: string;
-  title_font_size?: string;
-  row_font_size?: string;
+  title_font_size?: CssSizeConfig;
+  row_font_size?: CssSizeConfig;
   [key: string]: unknown;
 }
 
@@ -81,6 +84,7 @@ export type ResolvedTabletInfoCardConfig = TabletInfoCardConfig &
       | "border_radius"
       | "title_font_size"
       | "row_font_size"
+      | "source"
     >
   >;
 

@@ -1,2 +1,3 @@
 type: custom:tablet-info-card
+source: template_entity
 entity: sensor.ui_element_blinds

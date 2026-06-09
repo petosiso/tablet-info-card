@@ -1,5 +1,6 @@
 # Fallback style for users who prefer defining the rows directly in Lovelace.
 type: custom:tablet-info-card
+source: manual
 entity: sun.sun
 name: Sun overview
 icon: mdi:white-balance-sunny
@@ -7,8 +8,9 @@ navigation_path: /lovelace/default_view
 warn:
   entity: sun.sun
   state: below_horizon
-title_font_size: 16px
-row_font_size: 12px
+height: 130
+title_font_size: 16
+row_font_size: 12
 rows:
   - entity: sun.sun
     name: State

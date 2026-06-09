@@ -18,6 +18,7 @@ This card is built around a reusable component pattern:
 
 ```yaml
 type: custom:tablet-info-card
+source: template_entity
 entity: sensor.ui_element_blinds
 ```
 
@@ -49,6 +50,7 @@ The preferred input is a single entity with these attributes:
 
 | Attribute | Required | Description |
 | --- | --- | --- |
+| `ui_element_type` | For UI picker | Set to `tablet_info_card` so the visual editor and card suggestions can list only compatible template entities. |
 | `name` | No | Title shown in the card. Falls back to the entity friendly name. |
 | `icon` | No | Main Material Design icon. Falls back to `mdi:flash`. |
 | `navigation_path` | No | Dashboard path used when the main card is tapped. |
@@ -62,6 +64,8 @@ The preferred input is a single entity with these attributes:
 | `row_3_text` | No | Text for the third detail row. |
 | `row_3_entity` | No | Entity opened with `more-info` when the third row is tapped. |
 | `row_3_warn` | No | Highlights the third row. |
+
+You can define only the rows you need. Missing rows, for example `row_3_text`, are simply not rendered.
 
 ## Template sensor example
 
@@ -80,6 +84,7 @@ The preferred input is a single entity with these attributes:
         %}
         {{ 'Open' if open_count > 0 else 'Closed' }}
       attributes:
+        ui_element_type: tablet_info_card
         name: "Blinds"
         icon: "mdi:blinds-horizontal"
         navigation_path: "/lovelace/blinds"
@@ -127,10 +132,13 @@ Dashboard usage stays small:
 
 ```yaml
 type: custom:tablet-info-card
+source: template_entity
 entity: sensor.ui_element_blinds
 ```
 
 After creating a template sensor with `unique_id`, Home Assistant may generate an entity ID from the sensor name. Rename or confirm it in Home Assistant if you want a stable entity ID such as `sensor.ui_element_blinds`.
+
+The visual editor and Home Assistant card suggestions use the `ui_element_type: tablet_info_card` marker to list compatible template entities. Template sensors without the marker still work when referenced manually in YAML, but they will not appear in those filtered UI flows.
 
 ## Installation with HACS as a custom repository
 
@@ -153,6 +161,7 @@ You can also configure everything directly in Lovelace without template sensors:
 
 ```yaml
 type: custom:tablet-info-card
+source: manual
 entity: sun.sun
 name: Sun overview
 icon: mdi:white-balance-sunny
@@ -160,8 +169,9 @@ navigation_path: /lovelace/default_view
 warn:
   entity: sun.sun
   state: below_horizon
-title_font_size: 16px
-row_font_size: 12px
+height: 130
+title_font_size: 16
+row_font_size: 12
 rows:
   - entity: sun.sun
     name: State
@@ -218,25 +228,26 @@ The card intentionally does not evaluate Jinja in Lovelace YAML. For complex con
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
+| `source` | `template_entity` or `manual` | `template_entity` | Selects whether rows and default values come from template entity attributes or direct card config. |
 | `entity` | string | optional | Main entity used for title, icon, warning state, navigation path, and fallback row attributes. |
-| `name` | string | entity attribute | Main title override. |
-| `icon` | string | entity attribute or `mdi:flash` | Main Material Design icon override. |
-| `navigation_path` | string | entity attribute | Path used for the default card tap action. |
+| `name` | string | entity/template attribute | Main title override. |
+| `icon` | string | template attribute or `mdi:flash` | Main Material Design icon override. |
+| `navigation_path` | string | template attribute | Path used for the default card tap action. |
 | `tap_action` | object | navigate or more-info | Home Assistant tap action for the main card. |
-| `warn` | boolean or object | `entity.attributes.is_warn` | Switches the card to warning colors, either statically or by matching another entity state. |
-| `rows` | list | entity row attributes | Up to three detail rows. |
+| `warn` | boolean or object | template `is_warn` or `false` | Switches the card to warning colors, either statically or by matching another entity state. |
+| `rows` | list | template row attributes or empty | Up to three detail rows. |
 | `background_ok` | string | `rgba(46, 46, 46, 0.5)` | Normal card background. |
 | `background_nok` | string | `#ffcccc` | Warning card background. |
 | `text_ok` | string | `#18bcf2` | Normal text/icon color. |
 | `text_nok` | string | `#3a3a3a` | Warning text/icon color. |
 | `text_highlight` | string | `#ff5d0c` | Warning row highlight color. |
-| `height` | string | `130px` | Card height. |
+| `height` | string or number | `130px` | Card height. Unitless values from the UI editor are treated as pixels. |
 | `border_radius` | string | `20px` | Card border radius. |
 | `icon_size` | string | `37px` | Icon size. |
 | `icon_col_width` | string | `37px` | Icon column width. |
 | `row_indent` | string | `10px` | Left padding for detail rows. |
-| `title_font_size` | string | `16px` | CSS font size for the card title. |
-| `row_font_size` | string | `12px` | CSS font size for detail rows. |
+| `title_font_size` | string or number | `16px` | Font size for the card title. Unitless values from the UI editor are treated as pixels. |
+| `row_font_size` | string or number | `12px` | Font size for detail rows. Unitless values from the UI editor are treated as pixels. |
 
 ## Fallback row options
 
@@ -262,11 +273,14 @@ The card is implemented as small Lit Web Components:
 src/
   main.ts                          # HACS card picker registration and bundle entry
   tablet-info-card.ts              # Home Assistant custom card lifecycle
+  card-source.ts                   # data-source and template-entity helpers
   components/
+    tablet-info-card-editor.ts     # visual editor coordinator used by Home Assistant
     tablet-info-card-body.ts       # visual card shell and card tap action
     tablet-info-card-header.ts     # icon and title
     tablet-info-card-rows.ts       # row list
     tablet-info-card-row.ts        # one detail row and row tap action
+    editor/                        # focused source, entity, manual, and layout editor controls
   viewModel.ts                     # config/entity attributes -> render model
   styles.ts                        # CSS variable helpers
   types.ts                         # HA and card config types
@@ -308,5 +322,5 @@ Lit is bundled into that file, so Home Assistant users do not install any fronte
 2. Update `CARD_VERSION` in `src/constants.ts`.
 3. Run `npm run check`.
 4. Commit the source files and generated `dist/tablet-info-card.js`.
-5. Create a GitHub release, for example `v0.3.0`.
+5. Create a GitHub release, for example `v0.4.0`.
 6. In HACS, redownload the custom repository.

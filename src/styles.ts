@@ -6,6 +6,15 @@ const sanitizeCssValue = (value: unknown, fallback: string): string => {
   return text.length > 0 ? text.replace(/[{};]/g, "") : fallback;
 };
 
+const sanitizeCssSize = (value: unknown, fallback: string): string => {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return `${value}px`;
+  }
+
+  const text = sanitizeCssValue(value, fallback);
+  return /^-?\d+(\.\d+)?$/.test(text) ? `${text}px` : text;
+};
+
 // Dynamic theme values are CSS variables so nested Lit shadow roots inherit them cleanly.
 export const buildThemeStyleMap = (
   config: ResolvedTabletInfoCardConfig,
@@ -14,11 +23,11 @@ export const buildThemeStyleMap = (
   "--tic-background": sanitizeCssValue(viewModel.background, "rgba(46, 46, 46, 0.5)"),
   "--tic-main-color": sanitizeCssValue(viewModel.mainColor, "#18bcf2"),
   "--tic-highlight-color": sanitizeCssValue(config.text_highlight, "#ff5d0c"),
-  "--tic-height": sanitizeCssValue(config.height, "130px"),
+  "--tic-height": sanitizeCssSize(config.height, "130px"),
   "--tic-border-radius": sanitizeCssValue(config.border_radius, "20px"),
   "--tic-icon-size": sanitizeCssValue(config.icon_size, "37px"),
   "--tic-icon-col-width": sanitizeCssValue(config.icon_col_width, "37px"),
   "--tic-row-indent": sanitizeCssValue(config.row_indent, "10px"),
-  "--tic-title-font-size": sanitizeCssValue(config.title_font_size, "16px"),
-  "--tic-row-font-size": sanitizeCssValue(config.row_font_size, "12px"),
+  "--tic-title-font-size": sanitizeCssSize(config.title_font_size, "16px"),
+  "--tic-row-font-size": sanitizeCssSize(config.row_font_size, "12px"),
 });

@@ -2,9 +2,11 @@
 # The recommended card usage is:
 #
 # type: custom:tablet-info-card
+# source: template_entity
 # entity: sensor.ui_element_blinds
 
 icon: mdi:flash
+ui_element_type: tablet_info_card
 name: Blinds
 navigation_path: /lovelace/blinds
 is_warn: false

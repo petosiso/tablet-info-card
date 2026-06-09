@@ -1,6 +1,6 @@
 import { CARD_TYPE, CARD_VERSION } from "./constants";
+import { isTabletInfoTemplateEntity } from "./card-source";
 import type { HomeAssistant } from "./types";
-import { hasValue } from "./utils";
 import "./tablet-info-card";
 
 // Card picker metadata lives outside the element so loading the bundle registers it once.
@@ -13,20 +13,15 @@ if (!window.customCards.some((card) => card.type === CARD_TYPE)) {
     description: "Compact status and navigation card with up to three detail rows.",
     documentationURL: "https://github.com/petosiso/tablet-info-card",
     getEntitySuggestion: (hass: HomeAssistant, entityId: string) => {
-      const attributes = hass.states[entityId]?.attributes ?? {};
-      const looksSupported =
-        hasValue(attributes.navigation_path) ||
-        hasValue(attributes.row_1_text) ||
-        hasValue(attributes.row_2_text) ||
-        hasValue(attributes.row_3_text);
-
-      if (!looksSupported) {
+      const entity = hass.states[entityId];
+      if (!isTabletInfoTemplateEntity(entity)) {
         return null;
       }
 
       return {
         config: {
           type: `custom:${CARD_TYPE}`,
+          source: "template_entity",
           entity: entityId,
         },
       };
