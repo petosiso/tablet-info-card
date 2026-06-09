@@ -2,7 +2,133 @@
 
 A compact Home Assistant Lovelace card for status/navigation tiles with one icon, one title, and up to three detail rows.
 
-This card replaces a previous `streamline-card` + `button-card` YAML template with a standalone custom card. It has no HACS runtime dependencies besides Home Assistant itself.
+The card is intentionally a **visual component**. The preferred pattern is to keep dashboard logic in Home Assistant template sensors and let the card render a stable attribute contract.
+
+## Why this card exists
+
+Home Assistant dashboards often become hard to maintain when every card instance repeats the same input entities, Jinja snippets, warning rules, labels, and navigation paths.
+
+This card is built around a reusable component pattern:
+
+- Define the logic once in Home Assistant, for example in `/homeassistant/templates/ui_elements.yaml`.
+- Expose that logic as a template sensor with UI-focused attributes.
+- Reuse the same visual card anywhere by passing only one entity.
+
+```yaml
+type: custom:tablet-info-card
+entity: sensor.ui_element_blinds
+```
+
+That keeps the Lovelace card clean and makes each template sensor act like a small UI view-model. If you want to move the same tile to another dashboard, you do not need to copy Jinja code or repeat the same row definitions.
+
+The card still supports direct YAML configuration as a fallback for users who do not want this template sensor pattern.
+
+## Recommended Home Assistant structure
+
+Create a template file like this:
+
+```text
+/homeassistant/templates/ui_elements.yaml
+```
+
+Include it from `configuration.yaml`:
+
+```yaml
+template: !include_dir_merge_list templates/
+```
+
+Then define one or more template sensors in `ui_elements.yaml`. Each sensor can describe one reusable UI element.
+
+See [examples/ui-elements-template.yaml](examples/ui-elements-template.yaml) for a complete example.
+
+## Template sensor contract
+
+The preferred input is a single entity with these attributes:
+
+| Attribute | Required | Description |
+| --- | --- | --- |
+| `name` | No | Title shown in the card. Falls back to the entity friendly name. |
+| `icon` | No | Main Material Design icon. Falls back to `mdi:flash`. |
+| `navigation_path` | No | Dashboard path used when the main card is tapped. |
+| `is_warn` | No | Switches the main card into warning colors. |
+| `row_1_text` | No | Text for the first detail row. |
+| `row_1_entity` | No | Entity opened with `more-info` when the first row is tapped. |
+| `row_1_warn` | No | Highlights the first row. |
+| `row_2_text` | No | Text for the second detail row. |
+| `row_2_entity` | No | Entity opened with `more-info` when the second row is tapped. |
+| `row_2_warn` | No | Highlights the second row. |
+| `row_3_text` | No | Text for the third detail row. |
+| `row_3_entity` | No | Entity opened with `more-info` when the third row is tapped. |
+| `row_3_warn` | No | Highlights the third row. |
+
+## Template sensor example
+
+```yaml
+- sensor:
+    - name: "Blinds [UI]"
+      unique_id: ui_element_blinds
+      state: >
+        {% set covers = [
+          'cover.blinds_bedroom',
+          'cover.blinds_kitchen'
+        ] %}
+        {% set open_count =
+          (covers | select('is_state', 'open') | list | count)
+          + (covers | select('is_state', 'opening') | list | count)
+        %}
+        {{ 'Open' if open_count > 0 else 'Closed' }}
+      attributes:
+        name: "Blinds"
+        icon: "mdi:blinds-horizontal"
+        navigation_path: "/lovelace/blinds"
+        is_warn: >
+          {% set covers = [
+            'cover.blinds_bedroom',
+            'cover.blinds_kitchen'
+          ] %}
+          {% set open_count =
+            (covers | select('is_state', 'open') | list | count)
+            + (covers | select('is_state', 'opening') | list | count)
+          %}
+          {{ open_count > 0 and is_state('sun.sun', 'below_horizon') }}
+
+        row_1_entity: sensor.ui_element_blinds
+        row_1_text: >
+          {% set covers = [
+            'cover.blinds_bedroom',
+            'cover.blinds_kitchen'
+          ] %}
+          {% set open_count =
+            (covers | select('is_state', 'open') | list | count)
+            + (covers | select('is_state', 'opening') | list | count)
+          %}
+          Open: {{ open_count }}
+        row_1_warn: >
+          {% set covers = [
+            'cover.blinds_bedroom',
+            'cover.blinds_kitchen'
+          ] %}
+          {% set open_count =
+            (covers | select('is_state', 'open') | list | count)
+            + (covers | select('is_state', 'opening') | list | count)
+          %}
+          {{ open_count > 0 and is_state('sun.sun', 'below_horizon') }}
+
+        row_2_entity: sun.sun
+        row_2_text: >
+          {% set next_setting = state_attr('sun.sun', 'next_setting') %}
+          Sunset: {{ as_timestamp(next_setting) | timestamp_custom('%H:%M', true) if next_setting else '-' }}
+        row_2_warn: false
+```
+
+Dashboard usage stays small:
+
+```yaml
+type: custom:tablet-info-card
+entity: sensor.ui_element_blinds
+```
+
+After creating a template sensor with `unique_id`, Home Assistant may generate an entity ID from the sensor name. Rename or confirm it in Home Assistant if you want a stable entity ID such as `sensor.ui_element_blinds`.
 
 ## Installation with HACS as a custom repository
 
@@ -19,32 +145,9 @@ url: /hacsfiles/tablet-info-card/tablet-info-card.js
 type: module
 ```
 
-## Basic usage
+## Fallback config-driven usage
 
-```yaml
-type: custom:tablet-info-card
-entity: sensor.tablet_status
-```
-
-In this mode the card reads these optional entity attributes:
-
-```yaml
-icon: mdi:flash
-name: Tablet
-navigation_path: /dashboard-tablet
-is_warn: false
-row_1_text: Battery 82 %
-row_1_entity: sensor.tablet_battery
-row_1_warn: false
-row_2_text: Charging
-row_2_entity: binary_sensor.tablet_charging
-row_2_warn: false
-row_3_text: Wi-Fi OK
-row_3_entity: sensor.tablet_wifi
-row_3_warn: false
-```
-
-## Config-driven usage
+You can also configure everything directly in Lovelace without template sensors:
 
 ```yaml
 type: custom:tablet-info-card
@@ -65,13 +168,13 @@ rows:
 
 Rows support static text or entity-derived text. If a row has `entity` but no `text`, the card renders the entity friendly name and state.
 
-## Options
+## Card options
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `entity` | string | optional | Main entity used for title, icon, warning state, navigation path, and fallback row attributes. |
-| `name` | string | entity attribute | Main title. |
-| `icon` | string | `mdi:flash` | Main Material Design icon. |
+| `name` | string | entity attribute | Main title override. |
+| `icon` | string | entity attribute or `mdi:flash` | Main Material Design icon override. |
 | `navigation_path` | string | entity attribute | Path used for the default card tap action. |
 | `tap_action` | object | navigate or more-info | Home Assistant tap action for the main card. |
 | `warn` | boolean | `entity.attributes.is_warn` | Switches the card to warning colors. |
@@ -87,7 +190,9 @@ Rows support static text or entity-derived text. If a row has `entity` but no `t
 | `icon_col_width` | string | `37px` | Icon column width. |
 | `row_indent` | string | `10px` | Left padding for detail rows. |
 
-## Row options
+## Fallback row options
+
+These options apply only when you define `rows` directly in Lovelace:
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |

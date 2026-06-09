@@ -1,0 +1,154 @@
+# Example: /homeassistant/templates/ui_elements.yaml
+#
+# Include the templates directory from configuration.yaml:
+#
+# template: !include_dir_merge_list templates/
+#
+# The card is meant to render these template sensors by passing only:
+#
+# type: custom:tablet-info-card
+# entity: sensor.ui_element_blinds
+
+- sensor:
+    - name: "Blinds [UI]"
+      unique_id: ui_element_blinds
+      state: >
+        {% set covers = [
+          'cover.blinds_bedroom',
+          'cover.blinds_kitchen'
+        ] %}
+        {% set open_count =
+          (covers | select('is_state', 'open') | list | count)
+          + (covers | select('is_state', 'opening') | list | count)
+        %}
+        {{ 'Open' if open_count > 0 else 'Closed' }}
+      attributes:
+        name: "Blinds"
+        icon: "mdi:blinds-horizontal"
+        navigation_path: "/lovelace/blinds"
+
+        is_warn: >
+          {% set covers = [
+            'cover.blinds_bedroom',
+            'cover.blinds_kitchen'
+          ] %}
+          {% set open_count =
+            (covers | select('is_state', 'open') | list | count)
+            + (covers | select('is_state', 'opening') | list | count)
+          %}
+          {{ open_count > 0 and is_state('sun.sun', 'below_horizon') }}
+
+        row_1_entity: sensor.ui_element_blinds
+        row_1_text: >
+          {% set covers = [
+            'cover.blinds_bedroom',
+            'cover.blinds_kitchen'
+          ] %}
+          {% set open_count =
+            (covers | select('is_state', 'open') | list | count)
+            + (covers | select('is_state', 'opening') | list | count)
+          %}
+          Open: {{ open_count }}
+        row_1_warn: >
+          {% set covers = [
+            'cover.blinds_bedroom',
+            'cover.blinds_kitchen'
+          ] %}
+          {% set open_count =
+            (covers | select('is_state', 'open') | list | count)
+            + (covers | select('is_state', 'opening') | list | count)
+          %}
+          {{ open_count > 0 and is_state('sun.sun', 'below_horizon') }}
+
+        row_2_entity: sensor.ui_element_blinds
+        row_2_text: >
+          {% set covers = [
+            'cover.blinds_bedroom',
+            'cover.blinds_kitchen'
+          ] %}
+          {% set closed_count =
+            (covers | select('is_state', 'closed') | list | count)
+            + (covers | select('is_state', 'closing') | list | count)
+          %}
+          Closed: {{ closed_count }}
+        row_2_warn: false
+
+        row_3_entity: sun.sun
+        row_3_text: >
+          {% set next_setting = state_attr('sun.sun', 'next_setting') %}
+          Sunset: {{ as_timestamp(next_setting) | timestamp_custom('%H:%M', true) if next_setting else '-' }}
+        row_3_warn: false
+
+    - name: "Motion [UI]"
+      unique_id: ui_element_motion
+      state: >
+        {% set sensors = [
+          'binary_sensor.motion_hall',
+          'binary_sensor.motion_kitchen'
+        ] %}
+        {% set active = sensors | select('is_state', 'on') | list | count %}
+        {{ 'Motion detected' if active > 0 else 'Clear' }}
+      attributes:
+        name: "Motion"
+        icon: "mdi:motion-sensor"
+        navigation_path: "/lovelace/motion"
+        is_warn: >
+          {% set sensors = [
+            'binary_sensor.motion_hall',
+            'binary_sensor.motion_kitchen'
+          ] %}
+          {{ (sensors | select('is_state', 'on') | list | count) > 0 }}
+
+        row_1_entity: sensor.ui_element_motion
+        row_1_text: >
+          {% set sensors = [
+            'binary_sensor.motion_hall',
+            'binary_sensor.motion_kitchen'
+          ] %}
+          {% set active = sensors | select('is_state', 'on') | list | count %}
+          Active: {{ active }} / {{ sensors | count }}
+        row_1_warn: >
+          {% set sensors = [
+            'binary_sensor.motion_hall',
+            'binary_sensor.motion_kitchen'
+          ] %}
+          {{ (sensors | select('is_state', 'on') | list | count) > 0 }}
+
+        row_2_entity: sensor.ui_element_motion
+        row_2_text: >
+          {% set sensors = [
+            'binary_sensor.motion_hall',
+            'binary_sensor.motion_kitchen'
+          ] %}
+          {% set ns = namespace(ts=0, ent=None) %}
+          {% for sensor in sensors %}
+            {% set state = states[sensor] %}
+            {% if state is not none and state.state not in ['unknown', 'unavailable'] %}
+              {% set ts = as_timestamp(state.last_changed) %}
+              {% if ts > ns.ts %}
+                {% set ns.ts = ts %}
+                {% set ns.ent = sensor %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          Last: {{ state_attr(ns.ent, 'friendly_name') if ns.ent else '-' }}
+        row_2_warn: false
+
+        row_3_entity: sensor.ui_element_motion
+        row_3_text: >
+          {% set sensors = [
+            'binary_sensor.motion_hall',
+            'binary_sensor.motion_kitchen'
+          ] %}
+          {% set ns = namespace(ts=0) %}
+          {% for sensor in sensors %}
+            {% set state = states[sensor] %}
+            {% if state is not none and state.state not in ['unknown', 'unavailable'] %}
+              {% set ts = as_timestamp(state.last_changed) %}
+              {% if ts > ns.ts %}
+                {% set ns.ts = ts %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          Time: {{ ns.ts | timestamp_custom('%d.%m. %H:%M', true) if ns.ts > 0 else '-' }}
+        row_3_warn: false

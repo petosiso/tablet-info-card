@@ -1,13 +1,19 @@
+# Example attributes exposed by a Home Assistant template sensor.
+# The recommended card usage is:
+#
+# type: custom:tablet-info-card
+# entity: sensor.ui_element_blinds
+
 icon: mdi:flash
-name: Tablet
-navigation_path: /dashboard-tablet
+name: Blinds
+navigation_path: /lovelace/blinds
 is_warn: false
-row_1_text: Battery 82 %
-row_1_entity: sensor.tablet_battery
+row_1_text: "Open: 2"
+row_1_entity: sensor.ui_element_blinds
 row_1_warn: false
-row_2_text: Charging
-row_2_entity: binary_sensor.tablet_charging
+row_2_text: "Closed: 5"
+row_2_entity: sensor.ui_element_blinds
 row_2_warn: false
-row_3_text: Wi-Fi OK
-row_3_entity: sensor.tablet_wifi
+row_3_text: "Sunset: 20:42"
+row_3_entity: sun.sun
 row_3_warn: false

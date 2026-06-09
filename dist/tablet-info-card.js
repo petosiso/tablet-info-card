@@ -1,4 +1,4 @@
-const CARD_VERSION = "0.1.0";
+const CARD_VERSION = "0.1.1";
 const CARD_TYPE = "tablet-info-card";
 
 const DEFAULT_CONFIG = {
@@ -60,14 +60,7 @@ class TabletInfoCard extends HTMLElement {
 
   static getStubConfig() {
     return {
-      entity: "sun.sun",
-      name: "Home status",
-      icon: "mdi:home-assistant",
-      rows: [
-        {
-          text: "Primary status row",
-        },
-      ],
+      entity: "sensor.ui_element_example",
     };
   }
 

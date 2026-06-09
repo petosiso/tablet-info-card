@@ -1,3 +1,4 @@
+# Fallback style for users who prefer defining the rows directly in Lovelace.
 type: custom:tablet-info-card
 entity: sensor.boiler_status
 name: Boiler

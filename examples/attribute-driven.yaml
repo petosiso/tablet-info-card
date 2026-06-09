@@ -1,2 +1,2 @@
 type: custom:tablet-info-card
-entity: sensor.tablet_status
+entity: sensor.ui_element_blinds
