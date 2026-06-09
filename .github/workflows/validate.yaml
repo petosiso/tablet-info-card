@@ -7,13 +7,16 @@ on:
     - cron: "0 0 * * *"
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   validate-hacs:
     runs-on: "ubuntu-latest"
     steps:
-      - uses: "actions/checkout@v4"
       - name: HACS validation
         uses: "hacs/action@main"
         with:
           category: "plugin"
-          ignore: "images"
+          # Custom repositories do not need README images or GitHub topics.
+          # Remove these ignores before submitting to the default HACS catalog.
+          ignore: "images topics"
