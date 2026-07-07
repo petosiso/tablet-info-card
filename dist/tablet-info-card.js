@@ -881,11 +881,13 @@ xt.styles = A`
     }
 
     .axis-label.top {
-      top: -4px;
+      top: 0;
+      transform: translateY(-8px);
     }
 
     .axis-label.bottom {
-      bottom: -4px;
+      bottom: 0;
+      transform: translateY(8px);
     }
 
     svg {
