@@ -1,6 +1,6 @@
 # Tablet Info Card
 
-A compact Home Assistant Lovelace card for status/navigation tiles with one icon, one title, and up to three detail rows.
+A compact Home Assistant Lovelace card for status/navigation tiles with one icon, one title, up to three detail rows, and an optional mini graph.
 
 The card is intentionally a **visual component**. The preferred pattern is to keep dashboard logic in Home Assistant template sensors and let the card render a stable attribute contract.
 
@@ -82,6 +82,12 @@ The preferred input is a single entity with these attributes:
 | `row_3_text` | No | Text for the third detail row. |
 | `row_3_entity` | No | Entity opened with `more-info` when the third row is tapped. |
 | `row_3_warn` | No | Highlights the third row. |
+| `graph_entity` | No | Numeric entity whose current state and Home Assistant history are rendered as a mini graph. |
+| `graph_name` | No | Label shown under the graph current value. |
+| `graph_period` | No | Set to `today` to render from local midnight to the next midnight. Defaults to `hours`. |
+| `graph_hours_to_show` | No | Number of history hours loaded for the graph. Defaults to `24`. |
+| `graph_unit` | No | Unit shown next to the graph current value. Falls back to the graph entity unit. |
+| `graph_color` | No | CSS color used for the graph line. Falls back to the card text color. |
 
 You can define only the rows you need. Missing rows, for example `row_3_text`, are simply not rendered.
 
@@ -146,12 +152,38 @@ You can define only the rows you need. Missing rows, for example `row_3_text`, a
         row_2_warn: false
 ```
 
+Graph settings can also live on the same template sensor:
+
+```yaml
+- sensor:
+    - name: "Heat Pump [UI]"
+      unique_id: ui_element_heat_pump
+      state: "{{ states('sensor.energy_consumption_kw') }}"
+      attributes:
+        ui_element_type: tablet_info_card
+        name: "Heat pump"
+        icon: "mdi:heat-pump"
+        navigation_path: "/lovelace/heat-pump"
+
+        row_1_entity: sensor.energy_consumption_kw
+        row_1_text: >
+          Consumption: {{ states('sensor.energy_consumption_kw') | float(0) | round(2) }} kW
+
+        graph_entity: sensor.energy_consumption_kw
+        graph_name: Current consumption
+        graph_period: today
+        graph_hours_to_show: 24
+        graph_unit: kW
+        graph_color: "#18bcf2"
+```
+
 Dashboard usage stays small:
 
 ```yaml
 type: custom:tablet-info-card
 source: template_entity
-entity: sensor.ui_element_blinds
+entity: sensor.ui_element_heat_pump
+height: 230
 ```
 
 After creating a template sensor with `unique_id`, Home Assistant may generate an entity ID from the sensor name. Rename or confirm it in Home Assistant if you want a stable entity ID such as `sensor.ui_element_blinds`.
@@ -190,6 +222,8 @@ warn:
 height: 130
 title_font_size: 16
 row_font_size: 12
+graph_value_font_size: 20
+graph_value_color: "#d5d8dc"
 rows:
   - entity: sun.sun
     name: State
@@ -202,6 +236,13 @@ rows:
   - entity: sun.sun
     attribute: next_setting
     name: Next setting
+graph:
+  entity: sensor.current_power
+  name: Current draw
+  period: hours
+  hours_to_show: 24
+  unit: kW
+  color: "#18bcf2"
 ```
 
 Rows support static text or entity-derived text. If a row has `entity` but no `text`, the card renders the entity friendly name and state.
@@ -254,11 +295,14 @@ The card intentionally does not evaluate Jinja in Lovelace YAML. For complex con
 | `tap_action` | object | navigate or more-info | Home Assistant tap action for the main card. |
 | `warn` | boolean or object | template `is_warn` or `false` | Switches the card to warning colors, either statically or by matching another entity state. |
 | `rows` | list | template row attributes or empty | Up to three detail rows. |
+| `graph` | object | optional | Optional mini graph with current value, label, and history sparkline. |
 | `background_ok` | string | `rgba(46, 46, 46, 0.5)` | Normal card background. |
 | `background_nok` | string | `#ffcccc` | Warning card background. |
 | `text_ok` | string | `#18bcf2` | Normal text/icon color. |
 | `text_nok` | string | `#3a3a3a` | Warning text/icon color. |
 | `text_highlight` | string | `#ff5d0c` | Warning row highlight color. |
+| `graph_warn_color` | string | `#d93025` | Graph line color used when the card is in warning state. |
+| `graph_value_color` | string | `#d5d8dc` | Graph current value and label color in normal state. Warning state uses `text_nok`. |
 | `height` | string or number | `130px` | Card height. Unitless values from the UI editor are treated as pixels. |
 | `border_radius` | string | `20px` | Card border radius. |
 | `icon_size` | string | `37px` | Icon size. |
@@ -266,6 +310,24 @@ The card intentionally does not evaluate Jinja in Lovelace YAML. For complex con
 | `row_indent` | string | `10px` | Left padding for detail rows. |
 | `title_font_size` | string or number | `16px` | Font size for the card title. Unitless values from the UI editor are treated as pixels. |
 | `row_font_size` | string or number | `12px` | Font size for detail rows. Unitless values from the UI editor are treated as pixels. |
+| `graph_value_font_size` | string or number | `20px` | Font size for the graph current value. The graph label is 2px smaller. Unitless values from the UI editor are treated as pixels. |
+
+## Graph options
+
+These options apply when you define `graph` directly in Lovelace. With `source: template_entity`, the same values can also come from `graph_entity`, `graph_name`, `graph_period`, `graph_hours_to_show`, `graph_unit`, and `graph_color` attributes on the template sensor. Lovelace `graph` values override template sensor graph attributes.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `entity` | string | required | Entity whose current state and Home Assistant history are rendered. |
+| `name` | string | entity friendly name | Label shown under the current value. |
+| `period` | `hours` or `today` | `hours` | `hours` renders a rolling window from `hours_to_show`; `today` renders from local midnight to the next midnight so the graph fills from left to right during the day. |
+| `hours_to_show` | number or string | `24` | Number of history hours loaded from Home Assistant. Values are clamped between `0.25` and `168`. |
+| `unit` | string | entity unit | Unit shown next to the current value. |
+| `color` | string | card text color | CSS color used for the sparkline in normal state. Warning state uses `graph_warn_color`. |
+
+The graph uses Home Assistant's history API and renders a lightweight SVG sparkline without an external chart dependency. If history is unavailable, the card still shows the current value.
+
+Tapping the graph opens the default Home Assistant more-info dialog for the graph entity, including its built-in history graph.
 
 ## Fallback row options
 
@@ -296,6 +358,7 @@ src/
     tablet-info-card-editor.ts     # visual editor coordinator used by Home Assistant
     tablet-info-card-body.ts       # visual card shell and card tap action
     tablet-info-card-header.ts     # icon and title
+    tablet-info-card-graph.ts      # optional SVG history sparkline and current value
     tablet-info-card-rows.ts       # row list
     tablet-info-card-row.ts        # one detail row and row tap action
     editor/                        # focused source, entity, manual, and layout editor controls

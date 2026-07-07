@@ -7,7 +7,9 @@ import { registerElement } from "../register-element";
 import { buildThemeStyleMap } from "../styles";
 import type { HomeAssistant, ResolvedTabletInfoCardConfig, TabletInfoRow } from "../types";
 import { buildCardViewModel } from "../viewModel";
+import type { TabletInfoGraphTapDetail } from "./tablet-info-card-graph";
 import type { TabletInfoRowTapDetail } from "./tablet-info-card-row";
+import "./tablet-info-card-graph";
 import "./tablet-info-card-header";
 import "./tablet-info-card-rows";
 
@@ -48,6 +50,14 @@ export class TabletInfoCardBody extends LitElement {
     .card.clickable {
       cursor: pointer;
     }
+
+    .card.has-graph:not(.has-rows) {
+      gap: 2px;
+    }
+
+    .card.has-graph.has-rows {
+      grid-template-rows: min-content min-content 1fr;
+    }
   `;
 
   @property({ attribute: false })
@@ -66,15 +76,28 @@ export class TabletInfoCardBody extends LitElement {
     return html`
       <ha-card style=${styleMap(buildThemeStyleMap(this.config, viewModel))}>
         <div
-          class=${classMap({ card: true, clickable: viewModel.isClickable })}
+          class=${classMap({
+            card: true,
+            clickable: viewModel.isClickable,
+            "has-graph": !!viewModel.graph,
+            "has-rows": viewModel.rows.length > 0,
+          })}
           role=${viewModel.isClickable ? "button" : "presentation"}
           tabindex=${viewModel.isClickable ? "0" : "-1"}
           @click=${this.handleCardTap}
           @keydown=${this.handleCardKeyDown}
+          @tablet-info-graph-tap=${this.handleGraphTap}
           @tablet-info-row-tap=${this.handleRowTap}
         >
           <tablet-info-card-header .icon=${viewModel.icon} .title=${viewModel.title}></tablet-info-card-header>
-          <tablet-info-card-rows .rows=${viewModel.rows}></tablet-info-card-rows>
+          ${viewModel.rows.length > 0 ? html`<tablet-info-card-rows .rows=${viewModel.rows}></tablet-info-card-rows>` : nothing}
+          ${viewModel.graph
+            ? html`<tablet-info-card-graph
+                class=${classMap({ compact: viewModel.rows.length === 0 })}
+                .graph=${viewModel.graph}
+                .hass=${this.hass}
+              ></tablet-info-card-graph>`
+            : nothing}
         </div>
       </ha-card>
     `;
@@ -86,11 +109,12 @@ export class TabletInfoCardBody extends LitElement {
     }
 
     const viewModel = buildCardViewModel(this.config, this.hass);
+    const actionEntity = this.config.entity || viewModel.graph?.entity;
     const tapAction =
       this.config.tap_action ||
       (viewModel.navigationPath
         ? { action: "navigate", navigation_path: viewModel.navigationPath }
-        : this.config.entity
+        : actionEntity
           ? { action: "more-info" }
           : null);
 
@@ -100,7 +124,7 @@ export class TabletInfoCardBody extends LitElement {
 
     fireHassAction(this, {
       config: {
-        entity: this.config.entity,
+        entity: actionEntity,
         tap_action: tapAction,
       },
       action: "tap",
@@ -130,6 +154,17 @@ export class TabletInfoCardBody extends LitElement {
     }
 
     this.fireRowAction(row, tapAction);
+  }
+
+  private handleGraphTap(event: CustomEvent<TabletInfoGraphTapDetail>) {
+    event.stopPropagation();
+    fireHassAction(this, {
+      config: {
+        entity: event.detail.graph.entity,
+        tap_action: { action: "more-info" },
+      },
+      action: "tap",
+    });
   }
 
   // Row components own low-level clicks; the body translates their intent to HA actions.

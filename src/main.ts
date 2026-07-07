@@ -10,7 +10,7 @@ if (!window.customCards.some((card) => card.type === CARD_TYPE)) {
     type: CARD_TYPE,
     name: "Tablet Info Card",
     preview: true,
-    description: "Compact status and navigation card with up to three detail rows.",
+    description: "Compact status and navigation card with up to three detail rows and an optional graph.",
     documentationURL: "https://github.com/petosiso/tablet-info-card",
     getEntitySuggestion: (hass: HomeAssistant, entityId: string) => {
       const entity = hass.states[entityId];

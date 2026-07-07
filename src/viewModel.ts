@@ -2,12 +2,23 @@ import type {
   HassEntity,
   HomeAssistant,
   ResolvedTabletInfoCardConfig,
+  TabletInfoGraph,
   TabletInfoCardViewModel,
+  TabletInfoGraphPeriod,
   TabletInfoRow,
   TabletInfoRowConfig,
   TabletInfoCardSource,
 } from "./types";
 import { asEntityId, asText, formatEntityValue, hasValue, toBool } from "./utils";
+
+interface TabletInfoGraphInput {
+  entity?: unknown;
+  name?: unknown;
+  period?: unknown;
+  hours_to_show?: unknown;
+  unit?: unknown;
+  color?: unknown;
+}
 
 // Single translation layer from HA config/entity attributes into a render-friendly model.
 export const buildCardViewModel = (
@@ -20,6 +31,7 @@ export const buildCardViewModel = (
   const isWarn = getCardWarn(config, hass, attributes, source);
   const navigationPath = getNavigationPath(config, attributes, source);
   const rows = getRows(config, hass, attributes, isWarn, source);
+  const graph = getGraph(config, hass, attributes, source);
 
   return {
     entity,
@@ -30,7 +42,8 @@ export const buildCardViewModel = (
     mainColor: isWarn ? config.text_nok : config.text_ok,
     background: isWarn ? config.background_nok : config.background_ok,
     rows,
-    isClickable: !!(config.tap_action || navigationPath || config.entity),
+    graph,
+    isClickable: !!(config.tap_action || navigationPath || config.entity || graph?.entity),
   };
 };
 
@@ -86,6 +99,60 @@ const getRows = (
   }
 
   return getTemplateRows(attributes);
+};
+
+const getGraph = (
+  config: ResolvedTabletInfoCardConfig,
+  hass: HomeAssistant | undefined,
+  attributes: Record<string, unknown>,
+  source: TabletInfoCardSource,
+): TabletInfoGraph | undefined => {
+  const templateGraph: TabletInfoGraphInput = source === "template_entity" ? getTemplateGraphConfig(attributes) : {};
+  const graph: TabletInfoGraphInput = config.graph ?? {};
+  const entityId = asEntityId(firstValue(graph.entity, templateGraph.entity));
+  if (!entityId) {
+    return undefined;
+  }
+
+  const entity = getEntity(hass, entityId);
+  const unit = asText(firstValue(graph.unit, templateGraph.unit, entity?.attributes?.unit_of_measurement)) || undefined;
+  const color = asText(firstValue(graph.color, templateGraph.color)) || undefined;
+
+  return {
+    entity: entityId,
+    name: asText(firstValue(graph.name, templateGraph.name, entity?.attributes?.friendly_name, entityId)),
+    period: normalizeGraphPeriod(firstValue(graph.period, templateGraph.period)),
+    hoursToShow: normalizeHoursToShow(firstValue(graph.hours_to_show, templateGraph.hours_to_show)),
+    unit,
+    color,
+  };
+};
+
+const getTemplateGraphConfig = (attributes: Record<string, unknown>) => ({
+  entity: attributes.graph_entity,
+  name: attributes.graph_name,
+  period: attributes.graph_period,
+  hours_to_show: attributes.graph_hours_to_show,
+  unit: attributes.graph_unit,
+  color: attributes.graph_color,
+});
+
+const firstValue = (...values: unknown[]): unknown => values.find(hasValue);
+
+const normalizeGraphPeriod = (value: unknown): TabletInfoGraphPeriod => {
+  const period = asText(value).toLowerCase();
+  return period === "today" || period === "day" || period === "daily" || period === "dnes" || period === "dneska"
+    ? "today"
+    : "hours";
+};
+
+const normalizeHoursToShow = (value: unknown): number => {
+  const hours = Number.parseFloat(asText(value));
+  if (!Number.isFinite(hours) || hours <= 0) {
+    return 24;
+  }
+
+  return Math.min(Math.max(hours, 0.25), 168);
 };
 
 const getTemplateRows = (attributes: Record<string, unknown>): TabletInfoRow[] =>

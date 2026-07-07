@@ -18,6 +18,7 @@ export interface HassEntity {
 
 export interface HomeAssistant {
   states: Record<string, HassEntity>;
+  callApi?<T = unknown>(method: string, path: string, parameters?: Record<string, unknown>): Promise<T>;
 }
 
 // Simple state matcher for fallback YAML; complex logic belongs in HA template sensors.
@@ -30,6 +31,7 @@ export interface WarnConditionConfig {
 export type WarnConfig = boolean | string | number | WarnConditionConfig;
 export type CssSizeConfig = string | number;
 export type TabletInfoCardSource = "template_entity" | "manual";
+export type TabletInfoGraphPeriod = "hours" | "today";
 
 export interface TabletInfoRowConfig {
   entity?: string;
@@ -43,6 +45,15 @@ export interface TabletInfoRowConfig {
   tap_action?: HassActionConfig;
 }
 
+export interface TabletInfoGraphConfig {
+  entity?: string;
+  name?: string;
+  period?: string;
+  hours_to_show?: string | number;
+  unit?: string;
+  color?: string;
+}
+
 export interface TabletInfoCardConfig {
   type?: string;
   source?: TabletInfoCardSource;
@@ -52,12 +63,15 @@ export interface TabletInfoCardConfig {
   navigation_path?: string;
   warn?: WarnConfig;
   rows?: TabletInfoRowConfig[];
+  graph?: TabletInfoGraphConfig;
   tap_action?: HassActionConfig;
   background_ok?: string;
   background_nok?: string;
   text_ok?: string;
   text_nok?: string;
   text_highlight?: string;
+  graph_warn_color?: string;
+  graph_value_color?: string;
   icon_size?: string;
   icon_col_width?: string;
   row_indent?: string;
@@ -65,6 +79,7 @@ export interface TabletInfoCardConfig {
   border_radius?: string;
   title_font_size?: CssSizeConfig;
   row_font_size?: CssSizeConfig;
+  graph_value_font_size?: CssSizeConfig;
   [key: string]: unknown;
 }
 
@@ -77,6 +92,8 @@ export type ResolvedTabletInfoCardConfig = TabletInfoCardConfig &
       | "text_ok"
       | "text_nok"
       | "text_highlight"
+      | "graph_warn_color"
+      | "graph_value_color"
       | "icon_size"
       | "icon_col_width"
       | "row_indent"
@@ -84,6 +101,7 @@ export type ResolvedTabletInfoCardConfig = TabletInfoCardConfig &
       | "border_radius"
       | "title_font_size"
       | "row_font_size"
+      | "graph_value_font_size"
       | "source"
     >
   >;
@@ -95,6 +113,15 @@ export interface TabletInfoRow {
   tap_action?: HassActionConfig;
 }
 
+export interface TabletInfoGraph {
+  entity: string;
+  name: string;
+  period: TabletInfoGraphPeriod;
+  hoursToShow: number;
+  unit?: string;
+  color?: string;
+}
+
 export interface TabletInfoCardViewModel {
   entity?: HassEntity;
   title: string;
@@ -104,5 +131,6 @@ export interface TabletInfoCardViewModel {
   mainColor: string;
   background: string;
   rows: TabletInfoRow[];
+  graph?: TabletInfoGraph;
   isClickable: boolean;
 }

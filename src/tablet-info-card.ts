@@ -28,14 +28,16 @@ export class TabletInfoCardElement extends LitElement {
   }
 
   getCardSize() {
-    return 3;
+    return this.config?.graph ? 4 : 3;
   }
 
   getGridOptions() {
+    const hasGraph = !!this.config?.graph;
+
     return {
-      rows: 2,
+      rows: hasGraph ? 4 : 2,
       columns: 4,
-      min_rows: 2,
+      min_rows: hasGraph ? 3 : 2,
       min_columns: 3,
     };
   }

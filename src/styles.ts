@@ -22,6 +22,11 @@ export const buildThemeStyleMap = (
 ): StyleInfo => ({
   "--tic-background": sanitizeCssValue(viewModel.background, "rgba(46, 46, 46, 0.5)"),
   "--tic-main-color": sanitizeCssValue(viewModel.mainColor, "#18bcf2"),
+  "--tic-graph-color": sanitizeCssValue(
+    viewModel.isWarn ? config.graph_warn_color : viewModel.graph?.color || viewModel.mainColor,
+    "#18bcf2",
+  ),
+  "--tic-graph-value-color": sanitizeCssValue(viewModel.isWarn ? viewModel.mainColor : config.graph_value_color, "#d5d8dc"),
   "--tic-highlight-color": sanitizeCssValue(config.text_highlight, "#ff5d0c"),
   "--tic-height": sanitizeCssSize(config.height, "130px"),
   "--tic-border-radius": sanitizeCssValue(config.border_radius, "20px"),
@@ -30,4 +35,5 @@ export const buildThemeStyleMap = (
   "--tic-row-indent": sanitizeCssValue(config.row_indent, "10px"),
   "--tic-title-font-size": sanitizeCssSize(config.title_font_size, "16px"),
   "--tic-row-font-size": sanitizeCssSize(config.row_font_size, "12px"),
+  "--tic-graph-value-font-size": sanitizeCssSize(config.graph_value_font_size, "20px"),
 });

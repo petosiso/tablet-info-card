@@ -1,4 +1,4 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { property } from "lit/decorators.js";
 import { registerElement } from "../register-element";
 import type { TabletInfoRow } from "../types";
@@ -22,16 +22,6 @@ export class TabletInfoCardRows extends LitElement {
       padding-left: var(--tic-row-indent, 10px);
     }
 
-    .empty {
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-size: var(--tic-row-font-size, 12px);
-      line-height: 1.15;
-      color: var(--tic-main-color, #18bcf2);
-      opacity: 0.7;
-    }
   `;
 
   @property({ attribute: false })
@@ -42,7 +32,7 @@ export class TabletInfoCardRows extends LitElement {
       <div class="rows">
         ${this.rows.length > 0
           ? this.rows.map((row, index) => html`<tablet-info-card-row .row=${row} data-index=${index}></tablet-info-card-row>`)
-          : html`<div class="empty">No rows configured</div>`}
+          : nothing}
       </div>
     `;
   }

@@ -9,7 +9,7 @@ import { fireEditorUpdate } from "./editor-events";
 
 const TAG_NAME = "tablet-info-card-layout-fields";
 
-type LayoutField = "height" | "title_font_size" | "row_font_size";
+type LayoutField = "height" | "title_font_size" | "row_font_size" | "graph_value_font_size";
 
 export class TabletInfoCardLayoutFields extends LitElement {
   static styles = [editorControlStyles, editorGridStyles];
@@ -51,6 +51,17 @@ export class TabletInfoCardLayoutFields extends LitElement {
             step="1"
             .value=${this.asNumberText(this.config.row_font_size, DEFAULT_CONFIG.row_font_size)}
             @change=${this.handleNumberInput("row_font_size")}
+          />
+        </label>
+        <label>
+          <span>Graph value font size</span>
+          <input
+            type="number"
+            min="10"
+            max="32"
+            step="1"
+            .value=${this.asNumberText(this.config.graph_value_font_size, DEFAULT_CONFIG.graph_value_font_size)}
+            @change=${this.handleNumberInput("graph_value_font_size")}
           />
         </label>
       </div>

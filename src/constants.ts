@@ -13,6 +13,8 @@ export const DEFAULT_CONFIG: Required<
     | "text_ok"
     | "text_nok"
     | "text_highlight"
+    | "graph_warn_color"
+    | "graph_value_color"
     | "icon_size"
     | "icon_col_width"
     | "row_indent"
@@ -20,6 +22,7 @@ export const DEFAULT_CONFIG: Required<
     | "border_radius"
     | "title_font_size"
     | "row_font_size"
+    | "graph_value_font_size"
     | "source"
   >
 > = {
@@ -29,6 +32,8 @@ export const DEFAULT_CONFIG: Required<
   text_ok: "#18bcf2",
   text_nok: "#3a3a3a",
   text_highlight: "#ff5d0c",
+  graph_warn_color: "#d93025",
+  graph_value_color: "#d5d8dc",
   icon_size: "37px",
   icon_col_width: "37px",
   row_indent: "10px",
@@ -36,4 +41,5 @@ export const DEFAULT_CONFIG: Required<
   border_radius: "20px",
   title_font_size: "16px",
   row_font_size: "12px",
+  graph_value_font_size: "20px",
 };
