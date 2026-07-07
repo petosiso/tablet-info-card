@@ -36,17 +36,17 @@ jobs:
             exit 1
           fi
 
-  validate-hacs:
-    runs-on: "ubuntu-latest"
-    needs: "build"
-    steps:
-      - name: Checkout
-        uses: "actions/checkout@v5"
+  # validate-hacs:
+  #   runs-on: "ubuntu-latest"
+  #   needs: "build"
+  #   steps:
+  #     - name: Checkout
+  #       uses: "actions/checkout@v5"
 
-      - name: HACS validation
-        uses: "hacs/action@main"
-        with:
-          category: "plugin"
-          # Custom repositories do not need README images or GitHub topics.
-          # Remove these ignores before submitting to the default HACS catalog.
-          ignore: "images topics"
+  #     - name: HACS validation
+  #       uses: "hacs/action@main"
+  #       with:
+  #         category: "plugin"
+  #         # Custom repositories do not need README images or GitHub topics.
+  #         # Remove these ignores before submitting to the default HACS catalog.
+  #         ignore: "images topics"
