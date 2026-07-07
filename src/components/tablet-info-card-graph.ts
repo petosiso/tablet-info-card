@@ -89,11 +89,11 @@ export class TabletInfoCardGraph extends LitElement {
     }
 
     .axis-label.top {
-      top: 0;
+      top: -4px;
     }
 
     .axis-label.bottom {
-      bottom: 0;
+      bottom: -4px;
     }
 
     svg {
