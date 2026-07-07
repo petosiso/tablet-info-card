@@ -4,6 +4,7 @@ import type {
   ResolvedTabletInfoCardConfig,
   TabletInfoGraph,
   TabletInfoCardViewModel,
+  TabletInfoGraphCurve,
   TabletInfoGraphPeriod,
   TabletInfoRow,
   TabletInfoRowConfig,
@@ -18,6 +19,8 @@ interface TabletInfoGraphInput {
   hours_to_show?: unknown;
   unit?: unknown;
   color?: unknown;
+  curve?: unknown;
+  mode?: unknown;
 }
 
 // Single translation layer from HA config/entity attributes into a render-friendly model.
@@ -125,6 +128,7 @@ const getGraph = (
     hoursToShow: normalizeHoursToShow(firstValue(graph.hours_to_show, templateGraph.hours_to_show)),
     unit,
     color,
+    curve: normalizeGraphCurve(firstValue(graph.curve, graph.mode, templateGraph.curve, templateGraph.mode)),
   };
 };
 
@@ -135,6 +139,8 @@ const getTemplateGraphConfig = (attributes: Record<string, unknown>) => ({
   hours_to_show: attributes.graph_hours_to_show,
   unit: attributes.graph_unit,
   color: attributes.graph_color,
+  curve: attributes.graph_curve,
+  mode: attributes.graph_mode,
 });
 
 const firstValue = (...values: unknown[]): unknown => values.find(hasValue);
@@ -153,6 +159,11 @@ const normalizeHoursToShow = (value: unknown): number => {
   }
 
   return Math.min(Math.max(hours, 0.25), 168);
+};
+
+const normalizeGraphCurve = (value: unknown): TabletInfoGraphCurve => {
+  const curve = asText(value).toLowerCase();
+  return curve === "step" || curve === "stepped" || curve === "stairs" ? "step" : "linear";
 };
 
 const getTemplateRows = (attributes: Record<string, unknown>): TabletInfoRow[] =>

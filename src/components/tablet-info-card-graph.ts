@@ -241,7 +241,7 @@ export class TabletInfoCardGraph extends LitElement {
 
   private renderSparkline(entity: HassEntity | undefined) {
     const range = this.graph ? getGraphTimeRange(this.graph) : undefined;
-    const sparkline = buildSparkline(this.getChartPoints(entity), 220, 45, range);
+    const sparkline = buildSparkline(this.getChartPoints(entity), 220, 45, this.graph?.curve ?? "linear", range);
 
     if (!sparkline) {
       return html`<div class="sparkline empty"></div>`;
@@ -264,10 +264,12 @@ export class TabletInfoCardGraph extends LitElement {
   private getChartPoints(entity: HassEntity | undefined): SparklinePoint[] {
     const points = [...this.points];
     const current = getNumericState(entity);
+    const lastPoint = points[points.length - 1];
+    const now = Date.now();
 
-    if (current !== null && points[points.length - 1]?.value !== current) {
+    if (current !== null && (!lastPoint || lastPoint.value !== current || lastPoint.time < now - 1_000)) {
       points.push({
-        time: Date.now(),
+        time: now,
         value: current,
       });
     }
@@ -443,6 +445,7 @@ const buildSparkline = (
   points: SparklinePoint[],
   width: number,
   height: number,
+  curve: TabletInfoGraph["curve"],
   range?: GraphTimeRange,
 ): SparklineRenderData | undefined => {
   if (points.length === 0) {
@@ -451,7 +454,7 @@ const buildSparkline = (
 
   const domainStart = range?.domainStart ?? points[0].time;
   const domainEnd = range?.domainEnd ?? points[points.length - 1].time;
-  const domainPoints = points.filter((point) => point.time >= domainStart && point.time <= domainEnd);
+  const domainPoints = getDomainPoints(points, domainStart, domainEnd, curve);
   if (domainPoints.length === 0) {
     return undefined;
   }
@@ -475,20 +478,98 @@ const buildSparkline = (
   }
 
   return {
-    path: domainPoints
-      .map((point, index) => {
-        const value = point.value;
-        const x = ((point.time - domainStart) / (domainEnd - domainStart)) * width;
-        const normalizedY = max === min ? 0.5 : (value - min) / (max - min);
-        const y = padding + (1 - normalizedY) * innerHeight;
-        const command = index === 0 ? "M" : "L";
-
-        return `${command} ${formatPathNumber(x)} ${formatPathNumber(y)}`;
-      })
-      .join(" "),
+    path:
+      curve === "step"
+        ? buildStepPath(domainPoints, domainStart, domainEnd, width, padding, innerHeight, min, max)
+        : buildLinearPath(domainPoints, domainStart, domainEnd, width, padding, innerHeight, min, max),
     min,
     max,
   };
+};
+
+const getDomainPoints = (
+  points: SparklinePoint[],
+  domainStart: number,
+  domainEnd: number,
+  curve: TabletInfoGraph["curve"],
+): SparklinePoint[] => {
+  const domainPoints = points.filter((point) => point.time >= domainStart && point.time <= domainEnd);
+  if (curve !== "step") {
+    return domainPoints;
+  }
+
+  const previousPoint = [...points].reverse().find((point) => point.time < domainStart);
+  if (previousPoint) {
+    return [{ time: domainStart, value: previousPoint.value }, ...domainPoints];
+  }
+
+  const firstPoint = domainPoints[0];
+  if (firstPoint && firstPoint.time > domainStart) {
+    return [{ time: domainStart, value: firstPoint.value }, ...domainPoints];
+  }
+
+  return domainPoints;
+};
+
+const buildLinearPath = (
+  points: SparklinePoint[],
+  domainStart: number,
+  domainEnd: number,
+  width: number,
+  padding: number,
+  innerHeight: number,
+  min: number,
+  max: number,
+): string =>
+  points
+    .map((point, index) => {
+      const { x, y } = getPointCoordinates(point, domainStart, domainEnd, width, padding, innerHeight, min, max);
+      const command = index === 0 ? "M" : "L";
+
+      return `${command} ${formatPathNumber(x)} ${formatPathNumber(y)}`;
+    })
+    .join(" ");
+
+const buildStepPath = (
+  points: SparklinePoint[],
+  domainStart: number,
+  domainEnd: number,
+  width: number,
+  padding: number,
+  innerHeight: number,
+  min: number,
+  max: number,
+): string => {
+  const [firstPoint, ...remainingPoints] = points;
+  const first = getPointCoordinates(firstPoint, domainStart, domainEnd, width, padding, innerHeight, min, max);
+  const commands = [`M ${formatPathNumber(first.x)} ${formatPathNumber(first.y)}`];
+  let previousY = first.y;
+
+  for (const point of remainingPoints) {
+    const { x, y } = getPointCoordinates(point, domainStart, domainEnd, width, padding, innerHeight, min, max);
+    commands.push(`L ${formatPathNumber(x)} ${formatPathNumber(previousY)}`);
+    commands.push(`L ${formatPathNumber(x)} ${formatPathNumber(y)}`);
+    previousY = y;
+  }
+
+  return commands.join(" ");
+};
+
+const getPointCoordinates = (
+  point: SparklinePoint,
+  domainStart: number,
+  domainEnd: number,
+  width: number,
+  padding: number,
+  innerHeight: number,
+  min: number,
+  max: number,
+): { x: number; y: number } => {
+  const x = ((point.time - domainStart) / (domainEnd - domainStart)) * width;
+  const normalizedY = max === min ? 0.5 : (point.value - min) / (max - min);
+  const y = padding + (1 - normalizedY) * innerHeight;
+
+  return { x, y };
 };
 
 const formatPathNumber = (value: number): string => value.toFixed(2).replace(/\.?0+$/, "");

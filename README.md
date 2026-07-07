@@ -88,6 +88,7 @@ The preferred input is a single entity with these attributes:
 | `graph_hours_to_show` | No | Number of history hours loaded for the graph. Defaults to `24`. |
 | `graph_unit` | No | Unit shown next to the graph current value. Falls back to the graph entity unit. |
 | `graph_color` | No | CSS color used for the graph line. Falls back to the card text color. |
+| `graph_curve` | No | Set to `step` for held-value sensors such as fan speed, binary-like numeric states, or modes. Defaults to `linear`. |
 
 You can define only the rows you need. Missing rows, for example `row_3_text`, are simply not rendered.
 
@@ -175,6 +176,7 @@ Graph settings can also live on the same template sensor:
         graph_hours_to_show: 24
         graph_unit: kW
         graph_color: "#18bcf2"
+        graph_curve: linear
 ```
 
 Dashboard usage stays small:
@@ -243,6 +245,7 @@ graph:
   hours_to_show: 24
   unit: kW
   color: "#18bcf2"
+  curve: linear
 ```
 
 Rows support static text or entity-derived text. If a row has `entity` but no `text`, the card renders the entity friendly name and state.
@@ -314,7 +317,7 @@ The card intentionally does not evaluate Jinja in Lovelace YAML. For complex con
 
 ## Graph options
 
-These options apply when you define `graph` directly in Lovelace. With `source: template_entity`, the same values can also come from `graph_entity`, `graph_name`, `graph_period`, `graph_hours_to_show`, `graph_unit`, and `graph_color` attributes on the template sensor. Lovelace `graph` values override template sensor graph attributes.
+These options apply when you define `graph` directly in Lovelace. With `source: template_entity`, the same values can also come from `graph_entity`, `graph_name`, `graph_period`, `graph_hours_to_show`, `graph_unit`, `graph_color`, and `graph_curve` attributes on the template sensor. Lovelace `graph` values override template sensor graph attributes.
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -324,6 +327,7 @@ These options apply when you define `graph` directly in Lovelace. With `source: 
 | `hours_to_show` | number or string | `24` | Number of history hours loaded from Home Assistant. Values are clamped between `0.25` and `168`. |
 | `unit` | string | entity unit | Unit shown next to the current value. |
 | `color` | string | card text color | CSS color used for the sparkline in normal state. Warning state uses `graph_warn_color`. |
+| `curve` | `linear` or `step` | `linear` | `linear` connects points directly; `step` holds each value until the next state change, matching Home Assistant history for discrete sensors. |
 
 The graph uses Home Assistant's history API and renders a lightweight SVG sparkline without an external chart dependency. If history is unavailable, the card still shows the current value.
 

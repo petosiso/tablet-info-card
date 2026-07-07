@@ -32,6 +32,7 @@ export type WarnConfig = boolean | string | number | WarnConditionConfig;
 export type CssSizeConfig = string | number;
 export type TabletInfoCardSource = "template_entity" | "manual";
 export type TabletInfoGraphPeriod = "hours" | "today";
+export type TabletInfoGraphCurve = "linear" | "step";
 
 export interface TabletInfoRowConfig {
   entity?: string;
@@ -52,6 +53,8 @@ export interface TabletInfoGraphConfig {
   hours_to_show?: string | number;
   unit?: string;
   color?: string;
+  curve?: string;
+  mode?: string;
 }
 
 export interface TabletInfoCardConfig {
@@ -120,6 +123,7 @@ export interface TabletInfoGraph {
   hoursToShow: number;
   unit?: string;
   color?: string;
+  curve: TabletInfoGraphCurve;
 }
 
 export interface TabletInfoCardViewModel {
