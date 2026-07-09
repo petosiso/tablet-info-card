@@ -54,8 +54,8 @@ export class TabletInfoCardGraph extends LitElement {
     .sparkline {
       position: relative;
       width: 100%;
-      height: 45px;
-      min-height: 45px;
+      height: var(--tic-graph-height, 35px);
+      min-height: var(--tic-graph-height, 35px);
       margin-top: 1px;
     }
 

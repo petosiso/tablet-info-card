@@ -9,7 +9,14 @@ import { fireEditorUpdate } from "./editor-events";
 
 const TAG_NAME = "tablet-info-card-layout-fields";
 
-type LayoutField = "height" | "title_font_size" | "row_font_size" | "graph_value_font_size";
+type LayoutField =
+  | "height"
+  | "card_padding"
+  | "icon_size"
+  | "title_font_size"
+  | "row_font_size"
+  | "graph_height"
+  | "graph_value_font_size";
 
 export class TabletInfoCardLayoutFields extends LitElement {
   static styles = [editorControlStyles, editorGridStyles];
@@ -32,6 +39,28 @@ export class TabletInfoCardLayoutFields extends LitElement {
           />
         </label>
         <label>
+          <span>Card padding</span>
+          <input
+            type="number"
+            min="0"
+            max="32"
+            step="1"
+            .value=${this.asNumberText(this.config.card_padding, DEFAULT_CONFIG.card_padding)}
+            @change=${this.handleNumberInput("card_padding")}
+          />
+        </label>
+        <label>
+          <span>Icon size</span>
+          <input
+            type="number"
+            min="16"
+            max="72"
+            step="1"
+            .value=${this.asNumberText(this.config.icon_size, DEFAULT_CONFIG.icon_size)}
+            @change=${this.handleNumberInput("icon_size")}
+          />
+        </label>
+        <label>
           <span>Title font size</span>
           <input
             type="number"
@@ -51,6 +80,17 @@ export class TabletInfoCardLayoutFields extends LitElement {
             step="1"
             .value=${this.asNumberText(this.config.row_font_size, DEFAULT_CONFIG.row_font_size)}
             @change=${this.handleNumberInput("row_font_size")}
+          />
+        </label>
+        <label>
+          <span>Graph height</span>
+          <input
+            type="number"
+            min="20"
+            max="96"
+            step="1"
+            .value=${this.asNumberText(this.config.graph_height, DEFAULT_CONFIG.graph_height)}
+            @change=${this.handleNumberInput("graph_height")}
           />
         </label>
         <label>

@@ -18,7 +18,9 @@ export const DEFAULT_CONFIG: Required<
     | "icon_size"
     | "icon_col_width"
     | "row_indent"
+    | "card_padding"
     | "height"
+    | "graph_height"
     | "border_radius"
     | "title_font_size"
     | "row_font_size"
@@ -37,7 +39,9 @@ export const DEFAULT_CONFIG: Required<
   icon_size: "37px",
   icon_col_width: "37px",
   row_indent: "10px",
+  card_padding: "10px",
   height: "130px",
+  graph_height: "35px",
   border_radius: "20px",
   title_font_size: "16px",
   row_font_size: "12px",

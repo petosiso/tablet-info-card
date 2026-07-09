@@ -42,7 +42,7 @@ export class TabletInfoCardBody extends LitElement {
       display: grid;
       grid-template-rows: min-content 1fr;
       gap: 7px;
-      padding: 10px 11px 9px;
+      padding: var(--tic-card-padding, 10px) var(--tic-card-padding, 10px) 9px;
       color: var(--tic-main-color, #18bcf2);
       cursor: default;
     }
