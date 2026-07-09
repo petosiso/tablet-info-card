@@ -24,7 +24,9 @@ export class TabletInfoCardBody extends LitElement {
 
     ha-card {
       display: block;
-      min-height: var(--tic-height, 130px);
+      box-sizing: border-box;
+      height: var(--tic-height, 130px);
+      min-height: 0;
       border-radius: var(--tic-border-radius, 20px);
       background: var(--tic-background, rgba(46, 46, 46, 0.5));
       border: 1px solid color-mix(in srgb, var(--tic-main-color, #18bcf2) 75%, transparent);
@@ -37,10 +39,11 @@ export class TabletInfoCardBody extends LitElement {
     }
 
     .card {
-      min-height: var(--tic-height, 130px);
+      height: 100%;
+      min-height: 0;
       box-sizing: border-box;
       display: grid;
-      grid-template-rows: min-content 1fr;
+      grid-template-rows: min-content minmax(0, 1fr);
       padding: 0 0 9px;
       color: var(--tic-main-color, #18bcf2);
       cursor: default;
@@ -53,6 +56,7 @@ export class TabletInfoCardBody extends LitElement {
 
     .body-region {
       min-width: 0;
+      min-height: 0;
       display: grid;
       align-content: start;
       gap: 7px;
@@ -70,6 +74,16 @@ export class TabletInfoCardBody extends LitElement {
     .body-region.has-graph.has-rows {
       grid-template-rows: min-content 1fr;
     }
+
+    .card.header-only {
+      grid-template-rows: 1fr;
+      padding: 0;
+    }
+
+    .card.header-only .header-region {
+      align-self: center;
+      padding: 0 var(--tic-header-padding, 10px);
+    }
   `;
 
   @property({ attribute: false })
@@ -84,6 +98,9 @@ export class TabletInfoCardBody extends LitElement {
     }
 
     const viewModel = buildCardViewModel(this.config, this.hass);
+    const hasRows = viewModel.rows.length > 0;
+    const hasGraph = !!viewModel.graph;
+    const hasBody = hasRows || hasGraph;
 
     return html`
       <ha-card style=${styleMap(buildThemeStyleMap(this.config, viewModel))}>
@@ -91,8 +108,9 @@ export class TabletInfoCardBody extends LitElement {
           class=${classMap({
             card: true,
             clickable: viewModel.isClickable,
-            "has-graph": !!viewModel.graph,
-            "has-rows": viewModel.rows.length > 0,
+            "has-graph": hasGraph,
+            "has-rows": hasRows,
+            "header-only": !hasBody,
           })}
           role=${viewModel.isClickable ? "button" : "presentation"}
           tabindex=${viewModel.isClickable ? "0" : "-1"}
@@ -104,22 +122,26 @@ export class TabletInfoCardBody extends LitElement {
           <div class="header-region">
             <tablet-info-card-header .icon=${viewModel.icon} .title=${viewModel.title}></tablet-info-card-header>
           </div>
-          <div
-            class=${classMap({
-              "body-region": true,
-              "has-graph": !!viewModel.graph,
-              "has-rows": viewModel.rows.length > 0,
-            })}
-          >
-            ${viewModel.rows.length > 0 ? html`<tablet-info-card-rows .rows=${viewModel.rows}></tablet-info-card-rows>` : nothing}
-            ${viewModel.graph
-              ? html`<tablet-info-card-graph
-                  class=${classMap({ compact: viewModel.rows.length === 0 })}
-                  .graph=${viewModel.graph}
-                  .hass=${this.hass}
-                ></tablet-info-card-graph>`
-              : nothing}
-          </div>
+          ${hasBody
+            ? html`
+                <div
+                  class=${classMap({
+                    "body-region": true,
+                    "has-graph": hasGraph,
+                    "has-rows": hasRows,
+                  })}
+                >
+                  ${hasRows ? html`<tablet-info-card-rows .rows=${viewModel.rows}></tablet-info-card-rows>` : nothing}
+                  ${viewModel.graph
+                    ? html`<tablet-info-card-graph
+                        class=${classMap({ compact: !hasRows })}
+                        .graph=${viewModel.graph}
+                        .hass=${this.hass}
+                      ></tablet-info-card-graph>`
+                    : nothing}
+                </div>
+              `
+            : nothing}
         </div>
       </ha-card>
     `;
