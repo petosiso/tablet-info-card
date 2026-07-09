@@ -11,7 +11,8 @@ const TAG_NAME = "tablet-info-card-layout-fields";
 
 type LayoutField =
   | "height"
-  | "card_padding"
+  | "header_padding"
+  | "body_padding"
   | "icon_size"
   | "title_font_size"
   | "row_font_size"
@@ -39,14 +40,25 @@ export class TabletInfoCardLayoutFields extends LitElement {
           />
         </label>
         <label>
-          <span>Card padding</span>
+          <span>Header padding</span>
           <input
             type="number"
             min="0"
             max="32"
             step="1"
-            .value=${this.asNumberText(this.config.card_padding, DEFAULT_CONFIG.card_padding)}
-            @change=${this.handleNumberInput("card_padding")}
+            .value=${this.asNumberText(this.config.header_padding, DEFAULT_CONFIG.header_padding)}
+            @change=${this.handleNumberInput("header_padding")}
+          />
+        </label>
+        <label>
+          <span>Body padding</span>
+          <input
+            type="number"
+            min="0"
+            max="32"
+            step="1"
+            .value=${this.asNumberText(this.config.body_padding, DEFAULT_CONFIG.body_padding)}
+            @change=${this.handleNumberInput("body_padding")}
           />
         </label>
         <label>

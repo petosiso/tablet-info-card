@@ -76,9 +76,9 @@ export interface TabletInfoCardConfig {
   graph_warn_color?: string;
   graph_value_color?: string;
   icon_size?: CssSizeConfig;
-  icon_col_width?: CssSizeConfig;
   row_indent?: CssSizeConfig;
-  card_padding?: CssSizeConfig;
+  header_padding?: CssSizeConfig;
+  body_padding?: CssSizeConfig;
   height?: CssSizeConfig;
   graph_height?: CssSizeConfig;
   border_radius?: string;
@@ -100,9 +100,9 @@ export type ResolvedTabletInfoCardConfig = TabletInfoCardConfig &
       | "graph_warn_color"
       | "graph_value_color"
       | "icon_size"
-      | "icon_col_width"
       | "row_indent"
-      | "card_padding"
+      | "header_padding"
+      | "body_padding"
       | "height"
       | "graph_height"
       | "border_radius"

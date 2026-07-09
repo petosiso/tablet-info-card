@@ -16,9 +16,9 @@ export const DEFAULT_CONFIG: Required<
     | "graph_warn_color"
     | "graph_value_color"
     | "icon_size"
-    | "icon_col_width"
     | "row_indent"
-    | "card_padding"
+    | "header_padding"
+    | "body_padding"
     | "height"
     | "graph_height"
     | "border_radius"
@@ -37,9 +37,9 @@ export const DEFAULT_CONFIG: Required<
   graph_warn_color: "#d93025",
   graph_value_color: "#d5d8dc",
   icon_size: "37px",
-  icon_col_width: "37px",
   row_indent: "10px",
-  card_padding: "10px",
+  header_padding: "10px",
+  body_padding: "10px",
   height: "130px",
   graph_height: "35px",
   border_radius: "20px",

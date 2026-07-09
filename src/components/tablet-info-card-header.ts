@@ -13,14 +13,14 @@ export class TabletInfoCardHeader extends LitElement {
 
     .header {
       display: grid;
-      grid-template-columns: max(var(--tic-icon-col-width, 37px), var(--tic-icon-size, 37px)) 1fr;
-      column-gap: 8px;
+      grid-template-columns: var(--tic-icon-size, 37px) 1fr;
+      column-gap: 7px;
       align-items: center;
       min-width: 0;
     }
 
     .icon-cell {
-      width: max(var(--tic-icon-col-width, 37px), var(--tic-icon-size, 37px));
+      width: var(--tic-icon-size, 37px);
       height: var(--tic-icon-size, 37px);
       display: flex;
       align-items: center;

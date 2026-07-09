@@ -222,7 +222,8 @@ warn:
   entity: sun.sun
   state: below_horizon
 height: 130
-card_padding: 10
+header_padding: 10
+body_padding: 10
 icon_size: 37
 title_font_size: 16
 row_font_size: 12
@@ -310,10 +311,10 @@ The card intentionally does not evaluate Jinja in Lovelace YAML. For complex con
 | `graph_warn_color` | string | `#d93025` | Graph line color used when the card is in warning state. |
 | `graph_value_color` | string | `#d5d8dc` | Graph current value and label color in normal state. Warning state uses `text_nok`. |
 | `height` | string or number | `130px` | Card height. Unitless values from the UI editor are treated as pixels. |
-| `card_padding` | string or number | `10px` | Inner padding used for the top, left, and right sides of the card. Bottom spacing stays fixed; adjust overall card `height` for bottom breathing room. |
+| `header_padding` | string or number | `10px` | Padding used for the header area with icon and title. Unitless values from the UI editor are treated as pixels. |
+| `body_padding` | string or number | `10px` | Padding used for the rows or graph area. Unitless values from the UI editor are treated as pixels. |
 | `border_radius` | string | `20px` | Card border radius. |
 | `icon_size` | string or number | `37px` | Icon size. Unitless values from the UI editor are treated as pixels. |
-| `icon_col_width` | string or number | `37px` | Icon column width. Unitless values from the UI editor are treated as pixels. |
 | `row_indent` | string or number | `10px` | Left padding for detail rows. Unitless values from the UI editor are treated as pixels. |
 | `title_font_size` | string or number | `16px` | Font size for the card title. Unitless values from the UI editor are treated as pixels. |
 | `row_font_size` | string or number | `12px` | Font size for detail rows. Unitless values from the UI editor are treated as pixels. |

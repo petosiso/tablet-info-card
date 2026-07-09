@@ -41,22 +41,34 @@ export class TabletInfoCardBody extends LitElement {
       box-sizing: border-box;
       display: grid;
       grid-template-rows: min-content 1fr;
-      gap: 7px;
-      padding: var(--tic-card-padding, 10px) var(--tic-card-padding, 10px) 9px;
+      padding: 0 0 9px;
       color: var(--tic-main-color, #18bcf2);
       cursor: default;
+    }
+
+    .header-region {
+      min-width: 0;
+      padding: var(--tic-header-padding, 10px) var(--tic-header-padding, 10px) 0;
+    }
+
+    .body-region {
+      min-width: 0;
+      display: grid;
+      align-content: start;
+      gap: 7px;
+      padding: var(--tic-body-padding, 10px) var(--tic-body-padding, 10px) 0;
     }
 
     .card.clickable {
       cursor: pointer;
     }
 
-    .card.has-graph:not(.has-rows) {
+    .body-region.has-graph:not(.has-rows) {
       gap: 2px;
     }
 
-    .card.has-graph.has-rows {
-      grid-template-rows: min-content min-content 1fr;
+    .body-region.has-graph.has-rows {
+      grid-template-rows: min-content 1fr;
     }
   `;
 
@@ -89,15 +101,25 @@ export class TabletInfoCardBody extends LitElement {
           @tablet-info-graph-tap=${this.handleGraphTap}
           @tablet-info-row-tap=${this.handleRowTap}
         >
-          <tablet-info-card-header .icon=${viewModel.icon} .title=${viewModel.title}></tablet-info-card-header>
-          ${viewModel.rows.length > 0 ? html`<tablet-info-card-rows .rows=${viewModel.rows}></tablet-info-card-rows>` : nothing}
-          ${viewModel.graph
-            ? html`<tablet-info-card-graph
-                class=${classMap({ compact: viewModel.rows.length === 0 })}
-                .graph=${viewModel.graph}
-                .hass=${this.hass}
-              ></tablet-info-card-graph>`
-            : nothing}
+          <div class="header-region">
+            <tablet-info-card-header .icon=${viewModel.icon} .title=${viewModel.title}></tablet-info-card-header>
+          </div>
+          <div
+            class=${classMap({
+              "body-region": true,
+              "has-graph": !!viewModel.graph,
+              "has-rows": viewModel.rows.length > 0,
+            })}
+          >
+            ${viewModel.rows.length > 0 ? html`<tablet-info-card-rows .rows=${viewModel.rows}></tablet-info-card-rows>` : nothing}
+            ${viewModel.graph
+              ? html`<tablet-info-card-graph
+                  class=${classMap({ compact: viewModel.rows.length === 0 })}
+                  .graph=${viewModel.graph}
+                  .hass=${this.hass}
+                ></tablet-info-card-graph>`
+              : nothing}
+          </div>
         </div>
       </ha-card>
     `;
