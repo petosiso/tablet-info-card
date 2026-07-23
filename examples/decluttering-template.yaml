@@ -1,0 +1,35 @@
+decluttering_templates:
+  tablet_ui_element:
+    default:
+      - width: 150px
+      - height: 110px
+      - title_font_size: 16
+      - row_font_size: 12
+      - graph_value_font_size: 14
+      - graph_height: 35
+      - icon_size: 30
+      - header_padding: 6
+      - body_padding: 5
+      - row_indent: 4
+      - fullCardClick: true
+    element:
+      type: custom:tablet-info-card
+      source: template_entity
+      entity: "[[entity]]"
+      height: "[[height]]"
+      header_padding: "[[header_padding]]"
+      body_padding: "[[body_padding]]"
+      row_indent: "[[row_indent]]"
+      border_radius: 14px
+      icon_size: "[[icon_size]]"
+      title_font_size: "[[title_font_size]]"
+      row_font_size: "[[row_font_size]]"
+      graph_height: "[[graph_height]]"
+      graph_value_font_size: "[[graph_value_font_size]]"
+      fullCardClick: "[[fullCardClick]]"
+      style:
+        left: "[[left]]"
+        top: "[[top]]"
+        width: "[[width]]"
+        transform: none
+        z-index: 50

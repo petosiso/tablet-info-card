@@ -3,7 +3,7 @@ import { property } from "lit/decorators.js";
 import { DEFAULT_CONFIG } from "../../constants";
 import { registerElement } from "../../register-element";
 import type { TabletInfoCardConfig } from "../../types";
-import { asText } from "../../utils";
+import { asText, toBool } from "../../utils";
 import { editorControlStyles, editorGridStyles } from "./editor-styles";
 import { fireEditorUpdate } from "./editor-events";
 
@@ -28,6 +28,13 @@ export class TabletInfoCardLayoutFields extends LitElement {
   render() {
     return html`
       <div class="grid">
+        <label>
+          <span>Full card click</span>
+          <span class="inline">
+            <input type="checkbox" .checked=${toBool(this.config.fullCardClick)} @change=${this.handleFullCardClickToggle} />
+            <span>Always navigate</span>
+          </span>
+        </label>
         <label>
           <span>Card height</span>
           <input
@@ -125,6 +132,10 @@ export class TabletInfoCardLayoutFields extends LitElement {
       const value = this.getStringValue(event);
       fireEditorUpdate(this, { [field]: value ? Number(value) : undefined });
     };
+  }
+
+  private handleFullCardClickToggle(event: Event) {
+    fireEditorUpdate(this, { fullCardClick: (event.target as HTMLInputElement).checked });
   }
 
   private getStringValue(event: Event): string | undefined {

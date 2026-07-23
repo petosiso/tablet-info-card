@@ -218,6 +218,7 @@ entity: sun.sun
 name: Sun overview
 icon: mdi:white-balance-sunny
 navigation_path: /lovelace/default_view
+fullCardClick: true
 warn:
   entity: sun.sun
   state: below_horizon
@@ -299,6 +300,7 @@ The card intentionally does not evaluate Jinja in Lovelace YAML. For complex con
 | `name` | string | entity/template attribute | Main title override. |
 | `icon` | string | template attribute or `mdi:flash` | Main Material Design icon override. |
 | `navigation_path` | string | template attribute | Path used for the default card tap action. |
+| `fullCardClick` | boolean | `false` | When `true` and `navigation_path` is set, every card area (including rows and graph) navigates to that path after a short vertical flip. |
 | `tap_action` | object | navigate or more-info | Home Assistant tap action for the main card. |
 | `warn` | boolean or object | template `is_warn` or `false` | Switches the card to warning colors, either statically or by matching another entity state. |
 | `rows` | list | template row attributes or empty | Up to three detail rows. |

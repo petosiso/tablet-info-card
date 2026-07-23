@@ -25,6 +25,7 @@ export const DEFAULT_CONFIG: Required<
     | "title_font_size"
     | "row_font_size"
     | "graph_value_font_size"
+    | "fullCardClick"
     | "source"
   >
 > = {
@@ -46,4 +47,5 @@ export const DEFAULT_CONFIG: Required<
   title_font_size: "16px",
   row_font_size: "12px",
   graph_value_font_size: "20px",
+  fullCardClick: false,
 };

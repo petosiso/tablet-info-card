@@ -64,6 +64,7 @@ export interface TabletInfoCardConfig {
   name?: string;
   icon?: string;
   navigation_path?: string;
+  fullCardClick?: boolean;
   warn?: WarnConfig;
   rows?: TabletInfoRowConfig[];
   graph?: TabletInfoGraphConfig;
@@ -109,6 +110,7 @@ export type ResolvedTabletInfoCardConfig = TabletInfoCardConfig &
       | "title_font_size"
       | "row_font_size"
       | "graph_value_font_size"
+      | "fullCardClick"
       | "source"
     >
   >;
@@ -140,5 +142,6 @@ export interface TabletInfoCardViewModel {
   background: string;
   rows: TabletInfoRow[];
   graph?: TabletInfoGraph;
+  fullCardClick: boolean;
   isClickable: boolean;
 }

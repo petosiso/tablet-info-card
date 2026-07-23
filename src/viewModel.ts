@@ -33,6 +33,7 @@ export const buildCardViewModel = (
   const source = config.source;
   const isWarn = getCardWarn(config, hass, attributes, source);
   const navigationPath = getNavigationPath(config, attributes, source);
+  const fullCardClick = toBool(config.fullCardClick);
   const rows = getRows(config, hass, attributes, isWarn, source);
   const graph = getGraph(config, hass, attributes, source);
 
@@ -46,6 +47,7 @@ export const buildCardViewModel = (
     background: isWarn ? config.background_nok : config.background_ok,
     rows,
     graph,
+    fullCardClick,
     isClickable: !!(config.tap_action || navigationPath || config.entity || graph?.entity),
   };
 };

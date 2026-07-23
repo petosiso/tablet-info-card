@@ -1,5 +1,5 @@
 import { LitElement, css, html, nothing } from "lit";
-import { property } from "lit/decorators.js";
+import { property, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { fireHassAction } from "../hass-action";
@@ -14,6 +14,7 @@ import "./tablet-info-card-header";
 import "./tablet-info-card-rows";
 
 const TAG_NAME = "tablet-info-card-body";
+const FULL_CARD_FLIP_DURATION_MS = 300;
 
 export class TabletInfoCardBody extends LitElement {
   static styles = css`
@@ -36,6 +37,33 @@ export class TabletInfoCardBody extends LitElement {
       overflow: hidden;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
+    }
+
+    ha-card.full-card-flipping {
+      animation: full-card-flip ${FULL_CARD_FLIP_DURATION_MS}ms cubic-bezier(0.4, 0, 0.2, 1) both;
+      transform-origin: center;
+      will-change: transform;
+    }
+
+    @keyframes full-card-flip {
+      0% {
+        transform: perspective(800px) rotateY(0deg) scale(1);
+      }
+      49.9% {
+        transform: perspective(800px) rotateY(90deg) scale(0.98);
+      }
+      50% {
+        transform: perspective(800px) rotateY(-90deg) scale(0.98);
+      }
+      100% {
+        transform: perspective(800px) rotateY(0deg) scale(1);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      ha-card.full-card-flipping {
+        animation: none;
+      }
     }
 
     .card {
@@ -92,6 +120,11 @@ export class TabletInfoCardBody extends LitElement {
   @property({ attribute: false })
   hass?: HomeAssistant;
 
+  @state()
+  private isFlipping = false;
+
+  private fullCardNavigationPending = false;
+
   render() {
     if (!this.config) {
       return nothing;
@@ -103,7 +136,10 @@ export class TabletInfoCardBody extends LitElement {
     const hasBody = hasRows || hasGraph;
 
     return html`
-      <ha-card style=${styleMap(buildThemeStyleMap(this.config, viewModel))}>
+      <ha-card
+        class=${classMap({ "full-card-flipping": this.isFlipping })}
+        style=${styleMap(buildThemeStyleMap(this.config, viewModel))}
+      >
         <div
           class=${classMap({
             card: true,
@@ -153,6 +189,10 @@ export class TabletInfoCardBody extends LitElement {
     }
 
     const viewModel = buildCardViewModel(this.config, this.hass);
+    if (this.startFullCardNavigation(viewModel.fullCardClick, viewModel.navigationPath)) {
+      return;
+    }
+
     const actionEntity = this.config.entity || viewModel.graph?.entity;
     const tapAction =
       this.config.tap_action ||
@@ -190,6 +230,11 @@ export class TabletInfoCardBody extends LitElement {
     }
 
     event.stopPropagation();
+    const viewModel = buildCardViewModel(this.config, this.hass);
+    if (this.startFullCardNavigation(viewModel.fullCardClick, viewModel.navigationPath)) {
+      return;
+    }
+
     const row = event.detail.row;
     const tapAction = row.tap_action || (row.entity ? { action: "more-info" } : null);
 
@@ -202,6 +247,13 @@ export class TabletInfoCardBody extends LitElement {
 
   private handleGraphTap(event: CustomEvent<TabletInfoGraphTapDetail>) {
     event.stopPropagation();
+    if (this.config) {
+      const viewModel = buildCardViewModel(this.config, this.hass);
+      if (this.startFullCardNavigation(viewModel.fullCardClick, viewModel.navigationPath)) {
+        return;
+      }
+    }
+
     fireHassAction(this, {
       config: {
         entity: event.detail.graph.entity,
@@ -219,6 +271,58 @@ export class TabletInfoCardBody extends LitElement {
         tap_action: tapAction,
       },
       action: "tap",
+    });
+  }
+
+  private startFullCardNavigation(enabled: boolean, navigationPath: string | undefined): boolean {
+    if (!enabled || !navigationPath) {
+      return false;
+    }
+
+    if (!this.fullCardNavigationPending) {
+      void this.navigateAfterFlip(navigationPath);
+    }
+
+    return true;
+  }
+
+  private async navigateAfterFlip(navigationPath: string) {
+    this.fullCardNavigationPending = true;
+    this.isFlipping = true;
+    await this.updateComplete;
+    await this.waitForFlip();
+
+    this.isFlipping = false;
+    fireHassAction(this, {
+      config: {
+        entity: this.config?.entity,
+        tap_action: { action: "navigate", navigation_path: navigationPath },
+      },
+      action: "tap",
+    });
+    this.fullCardNavigationPending = false;
+  }
+
+  private waitForFlip(): Promise<void> {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      return Promise.resolve();
+    }
+
+    const card = this.renderRoot.querySelector("ha-card");
+    if (!card) {
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve) => {
+      let timeoutId = 0;
+      const finish = () => {
+        window.clearTimeout(timeoutId);
+        card.removeEventListener("animationend", finish);
+        resolve();
+      };
+
+      card.addEventListener("animationend", finish, { once: true });
+      timeoutId = window.setTimeout(finish, FULL_CARD_FLIP_DURATION_MS + 100);
     });
   }
 }
