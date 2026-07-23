@@ -14,7 +14,7 @@ import "./tablet-info-card-header";
 import "./tablet-info-card-rows";
 
 const TAG_NAME = "tablet-info-card-body";
-const FULL_CARD_FLIP_DURATION_MS = 300;
+const FULL_CARD_FLIP_DURATION_MS = 400;
 
 export class TabletInfoCardBody extends LitElement {
   static styles = css`

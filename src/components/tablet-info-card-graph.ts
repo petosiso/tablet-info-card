@@ -260,7 +260,9 @@ export class TabletInfoCardGraph extends LitElement {
   }
 
   private getCurrentDisplay(entity: HassEntity | undefined): { value: string; unit: string; full: string } {
-    const value = entity && hasValue(entity.state) ? asText(entity.state) : "-";
+    const numericValue = getNumericState(entity);
+    const value =
+      numericValue !== null ? numericValue.toFixed(1) : entity && hasValue(entity.state) ? asText(entity.state) : "-";
     const unit = this.graph?.unit || asText(entity?.attributes?.unit_of_measurement) || "";
     const full = unit ? `${value} ${unit}` : value;
 

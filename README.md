@@ -321,7 +321,7 @@ The card intentionally does not evaluate Jinja in Lovelace YAML. For complex con
 | `title_font_size` | string or number | `16px` | Font size for the card title. Unitless values from the UI editor are treated as pixels. |
 | `row_font_size` | string or number | `12px` | Font size for detail rows. Unitless values from the UI editor are treated as pixels. |
 | `graph_height` | string or number | `35px` | Height of the graph drawing area. Unitless values from the UI editor are treated as pixels. |
-| `graph_value_font_size` | string or number | `20px` | Font size for the graph current value. The graph label is 2px smaller. Unitless values from the UI editor are treated as pixels. |
+| `graph_value_font_size` | string or number | `20px` | Font size for the graph current value, which is rounded to one decimal place. The graph label is 2px smaller. Unitless values from the UI editor are treated as pixels. |
 
 ## Graph options
 
